@@ -1,0 +1,22 @@
+# Find concepts related to Religious Orders and Institutes of Consecrated Life
+# Includes monks, friars, sisters, brothers, and various religious institutes
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?class ?label ?definition ?example
+WHERE {
+  ?class a owl:Class .
+  OPTIONAL { ?class rdfs:label ?label }
+  OPTIONAL { ?class skos:altLabel ?altLabel }
+  OPTIONAL { ?class skos:definition ?definition }
+  OPTIONAL { ?class skos:example ?example }
+
+  FILTER(
+    REGEX(STR(?label), "Religious|Order|Monk|Friar|Sister|Brother|Consecrated|Institute|Congregation|Novice|Vow", "i") ||
+    REGEX(STR(?altLabel), "Religious|Order|Monk|Friar|Sister|Brother|Consecrated|Institute|Congregation|Novice|Vow", "i")
+  )
+}
+ORDER BY ?label

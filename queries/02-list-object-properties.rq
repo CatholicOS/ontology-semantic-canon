@@ -1,0 +1,18 @@
+# List all object properties with their labels, domains, and ranges
+# Helps understand relationships between concepts
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?property ?label ?domain ?range ?definition
+WHERE {
+  ?property a owl:ObjectProperty .
+  OPTIONAL { ?property rdfs:label ?label }
+  OPTIONAL { ?property rdfs:domain ?domain }
+  OPTIONAL { ?property rdfs:range ?range }
+  OPTIONAL { ?property skos:definition ?definition }
+}
+ORDER BY ?label
+LIMIT 100

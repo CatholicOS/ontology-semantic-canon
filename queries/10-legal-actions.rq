@@ -1,0 +1,21 @@
+# Find legal action properties (from FOLIO legal ontology)
+# Covers actions like filed, granted, denied, appealed, etc.
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?property ?label ?definition ?example
+WHERE {
+  ?property a owl:ObjectProperty .
+  OPTIONAL { ?property rdfs:label ?label }
+  OPTIONAL { ?property skos:definition ?definition }
+  OPTIONAL { ?property skos:example ?example }
+
+  FILTER(
+    REGEX(STR(?label), "^folio:", "i")
+  )
+}
+ORDER BY ?label
+LIMIT 50

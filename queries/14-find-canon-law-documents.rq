@@ -1,0 +1,22 @@
+# Find document types and Canon Law related concepts
+# Code, Canon, Decree, Encyclical, Apostolic, etc.
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?class ?label ?definition ?example
+WHERE {
+  ?class a owl:Class .
+  OPTIONAL { ?class rdfs:label ?label }
+  OPTIONAL { ?class skos:altLabel ?altLabel }
+  OPTIONAL { ?class skos:definition ?definition }
+  OPTIONAL { ?class skos:example ?example }
+
+  FILTER(
+    REGEX(STR(?label), "Canon|Code|Decree|Encyclical|Apostolic|Motu Proprio|Rescript|Indult|Dispensation|Document|Text", "i") ||
+    REGEX(STR(?altLabel), "Canon|Code|Decree|Encyclical|Apostolic|Motu Proprio|Rescript|Indult|Dispensation", "i")
+  )
+}
+ORDER BY ?label

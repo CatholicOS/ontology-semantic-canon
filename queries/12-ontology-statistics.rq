@@ -1,0 +1,28 @@
+# Get basic statistics about the ontology
+# Counts classes, properties, and individuals
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+
+SELECT
+  (COUNT(DISTINCT ?class) AS ?totalClasses)
+  (COUNT(DISTINCT ?objProp) AS ?totalObjectProperties)
+  (COUNT(DISTINCT ?dataProp) AS ?totalDataProperties)
+  (COUNT(DISTINCT ?annProp) AS ?totalAnnotationProperties)
+  (COUNT(DISTINCT ?individual) AS ?totalIndividuals)
+WHERE {
+  { ?class a owl:Class }
+  UNION
+  { ?objProp a owl:ObjectProperty }
+  UNION
+  { ?dataProp a owl:DatatypeProperty }
+  UNION
+  { ?annProp a owl:AnnotationProperty }
+  UNION
+  {
+    ?individual a ?type .
+    ?type a owl:Class .
+    FILTER(?type != owl:Class && ?type != owl:ObjectProperty && ?type != owl:DatatypeProperty)
+  }
+}

@@ -1,0 +1,22 @@
+# Find classes related to Church hierarchy and clerical roles
+# Searches for Pope, Cardinal, Archbishop, Bishop, Priest, Deacon, etc.
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?class ?label ?altLabel ?definition
+WHERE {
+  ?class a owl:Class .
+  OPTIONAL { ?class rdfs:label ?label }
+  OPTIONAL { ?class skos:altLabel ?altLabel }
+  OPTIONAL { ?class skos:definition ?definition }
+
+  FILTER(
+    REGEX(STR(?label), "Pope|Cardinal|Archbishop|Bishop|Priest|Deacon|Pontiff|Cleric", "i") ||
+    REGEX(STR(?altLabel), "Pope|Cardinal|Archbishop|Bishop|Priest|Deacon|Pontiff|Cleric", "i") ||
+    REGEX(STR(?definition), "Pope|Cardinal|Archbishop|Bishop|Priest|Deacon|Pontiff|Cleric", "i")
+  )
+}
+ORDER BY ?label
