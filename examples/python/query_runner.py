@@ -1,0 +1,230 @@
+#!/usr/bin/env python3
+"""
+Catholic Semantic Canon - SPARQL Query Runner
+
+This script loads the ontology and runs SPARQL queries from the queries/ folder.
+
+Usage:
+    python query_runner.py                     # Interactive menu
+    python query_runner.py 01                  # Run query 01-list-all-classes.rq
+    python query_runner.py --list              # List available queries
+    python query_runner.py --query "SELECT ..."  # Run inline SPARQL
+"""
+
+import argparse
+import sys
+from pathlib import Path
+
+try:
+    from rdflib import Graph
+except ImportError:
+    print("Error: rdflib is not installed.")
+    print("Install it with: pip install -r requirements.txt")
+    sys.exit(1)
+
+
+# Paths relative to this script
+SCRIPT_DIR = Path(__file__).parent
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
+SOURCES_DIR = PROJECT_ROOT / "sources"
+QUERIES_DIR = PROJECT_ROOT / "queries"
+
+# Default ontology file (Turtle is fastest to parse)
+DEFAULT_ONTOLOGY = SOURCES_DIR / "ontology-semantic-canon.ttl"
+
+
+def load_ontology(ontology_path: Path = DEFAULT_ONTOLOGY) -> Graph:
+    """Load the ontology into an RDF graph."""
+    print(f"Loading ontology from {ontology_path.name}...")
+
+    g = Graph()
+
+    # Determine format from extension
+    suffix = ontology_path.suffix.lower()
+    format_map = {
+        ".ttl": "turtle",
+        ".owl": "xml",
+        ".owx": "xml",
+        ".rdf": "xml",
+        ".n3": "n3",
+        ".nt": "nt",
+    }
+    rdf_format = format_map.get(suffix, "turtle")
+
+    g.parse(str(ontology_path), format=rdf_format)
+    print(f"Loaded {len(g)} triples.")
+    return g
+
+
+def list_queries() -> list[Path]:
+    """List all available query files."""
+    if not QUERIES_DIR.exists():
+        print(f"Error: Queries directory not found: {QUERIES_DIR}")
+        return []
+
+    queries = sorted(QUERIES_DIR.glob("*.rq"))
+    return queries
+
+
+def run_query(graph: Graph, query_text: str) -> None:
+    """Execute a SPARQL query and print results."""
+    try:
+        results = graph.query(query_text)
+
+        # Check if it's a CONSTRUCT query (returns a graph)
+        if hasattr(results, 'graph') and results.graph is not None:
+            print("\n--- CONSTRUCT Results (Turtle format) ---\n")
+            print(results.graph.serialize(format="turtle"))
+        else:
+            # SELECT query results
+            if results.vars:
+                # Print header
+                header = " | ".join(str(var) for var in results.vars)
+                print(f"\n{header}")
+                print("-" * len(header))
+
+            count = 0
+            for row in results:
+                values = []
+                for val in row:
+                    if val is None:
+                        values.append("")
+                    else:
+                        # Shorten URIs for readability
+                        val_str = str(val)
+                        if val_str.startswith("http"):
+                            val_str = val_str.split("/")[-1].split("#")[-1]
+                        values.append(val_str)
+                print(" | ".join(values))
+                count += 1
+
+            print(f"\n({count} results)")
+
+    except Exception as e:
+        print(f"Query error: {e}")
+
+
+def run_query_file(graph: Graph, query_path: Path) -> None:
+    """Load and execute a query from a file."""
+    print(f"\n=== Running: {query_path.name} ===\n")
+
+    with open(query_path, "r") as f:
+        query_text = f.read()
+
+    run_query(graph, query_text)
+
+
+def interactive_menu(graph: Graph) -> None:
+    """Show an interactive menu to select and run queries."""
+    queries = list_queries()
+
+    if not queries:
+        return
+
+    while True:
+        print("\n" + "=" * 50)
+        print("Available SPARQL Queries:")
+        print("=" * 50)
+
+        for i, q in enumerate(queries, 1):
+            # Extract description from filename
+            name = q.stem
+            print(f"  {i:2}. {name}")
+
+        print("\n  q. Quit")
+        print("  c. Custom SPARQL query")
+        print("=" * 50)
+
+        choice = input("\nSelect a query number (or 'q' to quit): ").strip().lower()
+
+        if choice == 'q':
+            print("Goodbye!")
+            break
+        elif choice == 'c':
+            print("\nEnter your SPARQL query (end with an empty line):")
+            lines = []
+            while True:
+                line = input()
+                if line == "":
+                    break
+                lines.append(line)
+            if lines:
+                run_query(graph, "\n".join(lines))
+        else:
+            try:
+                idx = int(choice) - 1
+                if 0 <= idx < len(queries):
+                    run_query_file(graph, queries[idx])
+                else:
+                    print("Invalid selection.")
+            except ValueError:
+                print("Please enter a number.")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Run SPARQL queries against the Catholic Semantic Canon ontology"
+    )
+    parser.add_argument(
+        "query_number",
+        nargs="?",
+        help="Query number to run (e.g., '01' for 01-list-all-classes.rq)"
+    )
+    parser.add_argument(
+        "--list", "-l",
+        action="store_true",
+        help="List available queries"
+    )
+    parser.add_argument(
+        "--query", "-q",
+        type=str,
+        help="Run an inline SPARQL query"
+    )
+    parser.add_argument(
+        "--ontology", "-o",
+        type=Path,
+        default=DEFAULT_ONTOLOGY,
+        help=f"Path to ontology file (default: {DEFAULT_ONTOLOGY.name})"
+    )
+
+    args = parser.parse_args()
+
+    # List queries mode
+    if args.list:
+        queries = list_queries()
+        print("\nAvailable queries:")
+        for q in queries:
+            print(f"  {q.name}")
+        return
+
+    # Load ontology
+    if not args.ontology.exists():
+        print(f"Error: Ontology file not found: {args.ontology}")
+        print("Make sure you're running from the examples/python directory")
+        print("or provide the path with --ontology")
+        sys.exit(1)
+
+    graph = load_ontology(args.ontology)
+
+    # Run inline query
+    if args.query:
+        run_query(graph, args.query)
+        return
+
+    # Run specific query by number
+    if args.query_number:
+        queries = list_queries()
+        matching = [q for q in queries if q.name.startswith(args.query_number)]
+        if matching:
+            run_query_file(graph, matching[0])
+        else:
+            print(f"No query found matching '{args.query_number}'")
+            print("Use --list to see available queries")
+        return
+
+    # Interactive mode
+    interactive_menu(graph)
+
+
+if __name__ == "__main__":
+    main()

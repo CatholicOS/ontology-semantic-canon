@@ -36,11 +36,36 @@ The primary "source of truth" for this ontology is hosted on **WebProtégé**. T
 
 ### 🔍 Running SPARQL Queries
 
-The `queries/` folder contains sample SPARQL queries for exploring the ontology. These queries can be run using various tools:
+The `queries/` folder contains sample SPARQL queries for exploring the ontology. These queries can be run using various tools.
+
+#### Quick Start with Example Projects
+
+The `examples/` folder contains ready-to-run projects for both Python and Java:
+
+**Python (rdflib)**
+```bash
+cd examples/python
+pip install -r requirements.txt
+python query_runner.py              # Interactive menu
+python query_runner.py 01           # Run specific query
+python query_runner.py --list       # List all queries
+```
+
+**Java (Apache Jena / Maven)**
+```bash
+cd examples/java
+mvn compile exec:java                           # Interactive menu
+mvn compile exec:java -Dexec.args="01"          # Run specific query
+mvn compile exec:java -Dexec.args="--list"      # List all queries
+
+# Or build an executable JAR
+mvn package
+java -jar target/semantic-canon-query-runner-1.0.0.jar
+```
 
 #### Using Apache Jena (Command Line)
 
-Install [Apache Jena](https://jena.apache.org/) and use the `arq` command:
+If you have [Apache Jena](https://jena.apache.org/) installed globally, use the `arq` command:
 
 ```bash
 # Run a query against the OWL file
@@ -50,7 +75,7 @@ arq --data=sources/ontology-semantic-canon.owl --query=queries/01-list-all-class
 arq --data=sources/ontology-semantic-canon.ttl --query=queries/03-find-church-hierarchy-roles.rq
 ```
 
-#### Using rdflib (Python)
+#### Using rdflib (Python) Directly
 
 ```python
 from rdflib import Graph
