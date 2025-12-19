@@ -7,6 +7,42 @@ This example demonstrates how to query the Catholic Semantic Canon ontology usin
 - **Java 17+** (or Java 11+ with pom.xml adjustments)
 - **Maven 3.6+**
 
+### Installing Java
+
+**Ubuntu/Debian:**
+```bash
+sudo apt install openjdk-17-jdk
+```
+
+**macOS (Homebrew):**
+```bash
+brew install openjdk@17
+```
+
+**Windows:** Download from https://adoptium.net/ or use `winget install EclipseAdoptium.Temurin.17.JDK`
+
+### Installing Maven
+
+**Ubuntu/Debian:**
+```bash
+sudo apt install maven
+```
+
+**macOS (Homebrew):**
+```bash
+brew install maven
+```
+
+**Windows:** Download from https://maven.apache.org/download.cgi and follow the [installation guide](https://maven.apache.org/install.html), or use `winget install Apache.Maven`
+
+Verify installation:
+```bash
+java -version
+mvn -version
+```
+
+---
+
 ## Quick Start
 
 ```bash
@@ -86,7 +122,7 @@ arq --version
 
 You should see output like:
 ```
-Apache Jena ARQ - 5.2.0
+Apache Jena ARQ - 5.6.0
 ```
 
 ---
