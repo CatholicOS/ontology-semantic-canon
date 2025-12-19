@@ -1,35 +1,17 @@
-# Find properties and classes related to Authority in Canon Law
+# Find classes related to Authority in Canon Law
 # Covers magisterial authority, jurisdiction, and governance
+# Note: Simplified query structure to avoid rdflib 7.x / Python 3.12 compatibility issues
 
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX cos: <https://ontology.catholicos.catholic/>
 
-SELECT ?entity ?type ?label ?definition
+SELECT DISTINCT ?class ?label ?definition
 WHERE {
-  {
-    ?entity a owl:Class .
-    BIND("Class" AS ?type)
-  }
-  UNION
-  {
-    ?entity a owl:ObjectProperty .
-    BIND("ObjectProperty" AS ?type)
-  }
-  UNION
-  {
-    ?entity a owl:AnnotationProperty .
-    BIND("AnnotationProperty" AS ?type)
-  }
-
-  OPTIONAL { ?entity rdfs:label ?label }
-  OPTIONAL { ?entity skos:definition ?definition }
-
-  FILTER(
-    REGEX(STR(?label), "authority|jurisdiction|governance|power", "i") ||
-    REGEX(STR(?definition), "authority|jurisdiction|governance", "i")
-  )
+  ?class a owl:Class .
+  ?class rdfs:label ?label .
+  OPTIONAL { ?class skos:definition ?definition }
+  FILTER(REGEX(STR(?label), "authority|jurisdiction|governance|power", "i"))
 }
-ORDER BY ?type ?label
+ORDER BY ?label

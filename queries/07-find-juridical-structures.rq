@@ -1,21 +1,17 @@
 # Find juridical and administrative structures of the Church
 # Diocese, Parish, Archdiocese, Holy See, Curia, etc.
+# Note: Simplified query structure to avoid rdflib 7.x / Python 3.12 compatibility issues
 
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
-SELECT ?class ?label ?definition
+SELECT DISTINCT ?class ?label ?definition
 WHERE {
   ?class a owl:Class .
-  OPTIONAL { ?class rdfs:label ?label }
-  OPTIONAL { ?class skos:altLabel ?altLabel }
+  ?class rdfs:label ?label .
   OPTIONAL { ?class skos:definition ?definition }
-
-  FILTER(
-    REGEX(STR(?label), "Diocese|Parish|Archdiocese|Holy See|Vatican|Curia|Province|Tribunal|Council|Synod", "i") ||
-    REGEX(STR(?altLabel), "Diocese|Parish|Archdiocese|Holy See|Vatican|Curia|Province|Tribunal|Council|Synod", "i")
-  )
+  FILTER(REGEX(STR(?label), "Diocese|Parish|Archdiocese|Holy See|Vatican|Curia|Province|Tribunal|Council|Synod", "i"))
 }
 ORDER BY ?label

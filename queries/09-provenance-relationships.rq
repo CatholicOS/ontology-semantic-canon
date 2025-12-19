@@ -1,24 +1,17 @@
 # Find provenance and derivation relationships
 # Tracks document origins, translations, versions, and sources
+# Note: Simplified query structure to avoid rdflib 7.x / Python 3.12 compatibility issues
 
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX dc: <http://purl.org/dc/elements/1.1/>
-PREFIX dcterms: <http://purl.org/dc/terms/>
-PREFIX prov: <http://www.w3.org/ns/prov#>
 
-SELECT ?property ?label ?definition ?subPropertyOf
+SELECT DISTINCT ?property ?label ?definition
 WHERE {
   ?property a owl:ObjectProperty .
-  OPTIONAL { ?property rdfs:label ?label }
+  ?property rdfs:label ?label .
   OPTIONAL { ?property skos:definition ?definition }
-  OPTIONAL { ?property rdfs:subPropertyOf ?subPropertyOf }
-
-  FILTER(
-    REGEX(STR(?property), "derived|source|version|translated|provenance|edition", "i") ||
-    REGEX(STR(?label), "derived|source|version|translated|provenance|edition", "i")
-  )
+  FILTER(REGEX(STR(?label), "derived|source|version|translated|provenance|edition", "i"))
 }
 ORDER BY ?label

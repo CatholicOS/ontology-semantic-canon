@@ -1,21 +1,16 @@
 # Display the class hierarchy (subclass relationships)
 # Shows parent-child relationships between ontology classes
+# Note: Simplified query structure to avoid rdflib 7.x / Python 3.12 compatibility issues
 
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 SELECT ?subClass ?subClassLabel ?superClass ?superClassLabel
 WHERE {
-  ?subClass rdfs:subClassOf ?superClass .
   ?subClass a owl:Class .
-  ?superClass a owl:Class .
-
-  OPTIONAL { ?subClass rdfs:label ?subClassLabel }
-  OPTIONAL { ?superClass rdfs:label ?superClassLabel }
-
-  FILTER(!isBlank(?superClass))
+  ?subClass rdfs:label ?subClassLabel .
+  ?subClass rdfs:subClassOf ?superClass .
+  ?superClass rdfs:label ?superClassLabel .
 }
-ORDER BY ?superClassLabel ?subClassLabel
-LIMIT 200
+LIMIT 100

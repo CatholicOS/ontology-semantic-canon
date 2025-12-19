@@ -1,5 +1,6 @@
 # CONSTRUCT query to build a graph of classes with their labels
 # Useful for extracting a simplified vocabulary
+# Note: Simplified query structure to avoid rdflib 7.x / Python 3.12 compatibility issues
 
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -8,16 +9,10 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 CONSTRUCT {
   ?class a owl:Class ;
-         rdfs:label ?label ;
-         skos:prefLabel ?prefLabel ;
-         skos:altLabel ?altLabel .
+         rdfs:label ?label .
 }
 WHERE {
   ?class a owl:Class .
-  OPTIONAL { ?class rdfs:label ?label }
-  OPTIONAL { ?class skos:prefLabel ?prefLabel }
-  OPTIONAL { ?class skos:altLabel ?altLabel }
-
-  FILTER(BOUND(?label) || BOUND(?prefLabel))
+  ?class rdfs:label ?label .
 }
 LIMIT 100

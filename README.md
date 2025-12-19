@@ -42,10 +42,20 @@ The `queries/` folder contains sample SPARQL queries for exploring the ontology.
 
 The `examples/` folder contains ready-to-run projects for both Python and Java:
 
-**Python (rdflib)**
+**Python (rdflib)** — [Full documentation](examples/python/README.md)
+
 ```bash
 cd examples/python
+
+# Using python venv
+python3 -m venv venv
+source venv/bin/activate            # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+
+# Or using uv (faster)
+uv venv && source .venv/bin/activate && uv pip install -r requirements.txt
+
+# Run queries
 python query_runner.py              # Interactive menu
 python query_runner.py 01           # Run specific query
 python query_runner.py --list       # List all queries
@@ -80,7 +90,7 @@ arq --data=sources/ontology-semantic-canon.ttl --query=queries/03-find-church-hi
 ```python
 from rdflib import Graph
 
-# Load the ontology
+# Load the ontology (use OWL format for best compatibility)
 g = Graph()
 g.parse("sources/ontology-semantic-canon.owl", format="xml")
 
@@ -91,6 +101,8 @@ with open("queries/01-list-all-classes.rq") as f:
 for row in g.query(query):
     print(row)
 ```
+
+> **Note:** The ontology contains 120,000+ triples. See the [Python example documentation](examples/python/README.md) for caching strategies and known compatibility issues with Python 3.12.
 
 #### Using a Triple Store
 

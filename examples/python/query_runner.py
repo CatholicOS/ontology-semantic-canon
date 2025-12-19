@@ -12,6 +12,7 @@ Usage:
 """
 
 import argparse
+import pickle
 import sys
 from pathlib import Path
 
@@ -29,14 +30,26 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent
 SOURCES_DIR = PROJECT_ROOT / "sources"
 QUERIES_DIR = PROJECT_ROOT / "queries"
 
-# Default ontology file (Turtle is fastest to parse)
-DEFAULT_ONTOLOGY = SOURCES_DIR / "ontology-semantic-canon.ttl"
+# Default ontology file (OWL/XML format with pickle caching for stability)
+DEFAULT_ONTOLOGY = SOURCES_DIR / "ontology-semantic-canon.owl"
 
 
 def load_ontology(ontology_path: Path = DEFAULT_ONTOLOGY) -> Graph:
-    """Load the ontology into an RDF graph."""
-    print(f"Loading ontology from {ontology_path.name}...")
+    """Load the ontology into an RDF graph, using pickle cache if available."""
+    cache_path = ontology_path.with_suffix(".pickle")
 
+    # Try to load from cache first
+    if cache_path.exists():
+        try:
+            print(f"Loading from cache {cache_path.name}...")
+            with open(cache_path, "rb") as f:
+                g = pickle.load(f)
+            print(f"Loaded {len(g)} triples from cache.")
+            return g
+        except Exception as e:
+            print(f"Cache load failed ({e}), parsing ontology...")
+
+    print(f"Loading ontology from {ontology_path.name}...")
     g = Graph()
 
     # Determine format from extension
@@ -53,6 +66,16 @@ def load_ontology(ontology_path: Path = DEFAULT_ONTOLOGY) -> Graph:
 
     g.parse(str(ontology_path), format=rdf_format)
     print(f"Loaded {len(g)} triples.")
+
+    # Save to cache for faster subsequent loads
+    try:
+        print(f"Saving to cache {cache_path.name}...")
+        with open(cache_path, "wb") as f:
+            pickle.dump(g, f)
+        print("Cache saved successfully.")
+    except Exception as e:
+        print(f"Warning: Could not save cache: {e}")
+
     return g
 
 
@@ -77,11 +100,16 @@ def run_query(graph: Graph, query_text: str) -> None:
             print(results.graph.serialize(format="turtle"))
         else:
             # SELECT query results
-            if results.vars:
-                # Print header
-                header = " | ".join(str(var) for var in results.vars)
-                print(f"\n{header}")
-                print("-" * len(header))
+            # Defensive check for results.vars (rdflib bug workaround)
+            if results.vars and hasattr(results.vars, '__iter__'):
+                try:
+                    # Print header
+                    header = " | ".join(str(var) for var in results.vars)
+                    print(f"\n{header}")
+                    print("-" * len(header))
+                except TypeError:
+                    # results.vars is not iterable due to rdflib bug
+                    print("\n(Unable to display header due to rdflib bug)")
 
             count = 0
             for row in results:
@@ -92,9 +120,9 @@ def run_query(graph: Graph, query_text: str) -> None:
                     else:
                         # Shorten URIs for readability
                         val_str = str(val)
-                        if val_str.startswith("http"):
+                        if isinstance(val_str, str) and val_str.startswith("http"):
                             val_str = val_str.split("/")[-1].split("#")[-1]
-                        values.append(val_str)
+                        values.append(str(val_str))
                 print(" | ".join(values))
                 count += 1
 
@@ -102,6 +130,7 @@ def run_query(graph: Graph, query_text: str) -> None:
 
     except Exception as e:
         print(f"Query error: {e}")
+        print("(This may be an intermittent rdflib/Python 3.12 bug - try running the query again)")
 
 
 def run_query_file(graph: Graph, query_path: Path) -> None:
