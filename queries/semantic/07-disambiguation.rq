@@ -1,0 +1,33 @@
+# Semantic Query: Term Disambiguation
+# Shows classes with potentially ambiguous labels and their parent class context.
+#
+# This query helps disambiguate terms like "Brother" (monastic vs. sibling)
+# by showing the parent class for context.
+#
+# Note: Uses VALUES clause with specific URIs to avoid rdflib segfaults.
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT ?label ?definition ?parentLabel
+WHERE {
+  # Specific classes with potentially ambiguous terms
+  VALUES ?class {
+    osc:R82G7cJIoozrHVO1hXAdPAq   # Religious Brother
+    osc:RB3vzN2EDHRDJEMb4GfqXwR   # Religious Sister
+    osc:RBXNjqwY6LyVjvLFjxTEwj0   # Nun
+    osc:R3c06SBnWZwSBWdavz3I7w    # Religious Order Priest
+    osc:R7Npz2dMwAvM2YkbcTKhvKy   # Primary Canon
+    osc:RDCWfUYXx114d8AdyJQmbzH   # Canon Law System
+    osc:R69pFKCbtXWO4nkV3D1B0L    # Religious Order Role
+  }
+
+  ?class rdfs:label ?label ;
+         rdfs:subClassOf ?parentClass .
+
+  ?parentClass rdfs:label ?parentLabel .
+
+  OPTIONAL { ?class skos:definition ?definition }
+}
+LIMIT 50

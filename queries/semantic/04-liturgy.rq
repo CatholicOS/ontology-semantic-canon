@@ -1,0 +1,42 @@
+# Semantic Query: Liturgy
+# Shows all liturgy-related classes in the ontology hierarchy.
+#
+# Root class: Liturgy (RDiYA0x2kAubW5cDdOR4oZV)
+# Includes: Mass, Rite, Divine Office, liturgical celebrations, etc.
+#
+# Note: Simplified to avoid rdflib/Python 3.12 segfaults.
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT ?label ?definition ?parentLabel
+WHERE {
+  # Level 1: direct children of Liturgy
+  {
+    ?class rdfs:subClassOf osc:RDiYA0x2kAubW5cDdOR4oZV ;
+           rdfs:label ?label .
+    osc:RDiYA0x2kAubW5cDdOR4oZV rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 2: grandchildren
+  {
+    ?parent rdfs:subClassOf osc:RDiYA0x2kAubW5cDdOR4oZV .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 3: great-grandchildren
+  {
+    ?grandparent rdfs:subClassOf osc:RDiYA0x2kAubW5cDdOR4oZV .
+    ?parent rdfs:subClassOf ?grandparent .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+}
+LIMIT 100

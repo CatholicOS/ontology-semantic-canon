@@ -1,0 +1,35 @@
+# Semantic Query: Class Hierarchy Tree
+# Shows the class hierarchy with parent-child relationships
+# for Catholic ontology classes (2 levels deep).
+#
+# Note: Simplified to avoid rdflib/Python 3.12 segfaults.
+# For full hierarchy visualization, use Apache Jena (arq command).
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT ?label ?parentLabel
+WHERE {
+  # Root classes: Clergy, Sacraments, Consecrated Persons
+  VALUES ?rootClass {
+    osc:RChKPk9K152BirrIYgAREsY
+    osc:RB91Ir5bSOsoHyaGccORDpQ
+    osc:RDUOYPsMTjLKT8XTp6oHH2o
+  }
+
+  # Level 1: direct children of root
+  {
+    ?class rdfs:subClassOf ?rootClass ;
+           rdfs:label ?label .
+    ?rootClass rdfs:label ?parentLabel .
+  }
+  UNION
+  # Level 2: grandchildren of root
+  {
+    ?parent rdfs:subClassOf ?rootClass .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+  }
+}
+LIMIT 75

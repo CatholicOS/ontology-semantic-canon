@@ -1,0 +1,33 @@
+# Semantic Query: Religious Law Systems (including Canon Law)
+# Shows religious law system classes in the ontology hierarchy.
+#
+# Root class: Religious Law System (RM8uFdNbkVDabwW32Bv8E)
+# Includes: Canon Law System, Islamic Law System, Jewish Law System
+#
+# Note: The Canon Law System class currently has no subclasses in the ontology.
+# This query uses Religious Law System as the root to show available law systems.
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT ?label ?definition ?parentLabel
+WHERE {
+  # Level 1: direct children of Religious Law System
+  {
+    ?class rdfs:subClassOf osc:RM8uFdNbkVDabwW32Bv8E ;
+           rdfs:label ?label .
+    osc:RM8uFdNbkVDabwW32Bv8E rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 2: grandchildren (if any exist in future)
+  {
+    ?parent rdfs:subClassOf osc:RM8uFdNbkVDabwW32Bv8E .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+}
+LIMIT 50

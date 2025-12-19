@@ -1,0 +1,87 @@
+# Query Categories Configuration
+# Maps query categories to their root class URIs in the ontology
+#
+# These mappings enable semantic queries using rdfs:subClassOf* property paths
+# instead of fragile regex patterns. When a class is added as a subclass of
+# any root class, queries automatically include it.
+#
+# Namespace: https://ontology.catholicos.catholic/
+
+namespace: "https://ontology.catholicos.catholic/"
+
+categories:
+  # Church Hierarchy / Clergy
+  # Includes: Pope, Cardinal, Archbishop, Bishop, Priest, Deacon
+  church_hierarchy:
+    label: "Church Hierarchy"
+    description: "Clerical offices and ordained ministry roles"
+    root_classes:
+      - id: "RChKPk9K152BirrIYgAREsY"
+        label: "Clergy"
+    # Legacy regex for reference (to be deprecated):
+    # FILTER(REGEX(STR(?label), "Pope|Cardinal|Archbishop|Bishop|Priest|Deacon|Pontiff|Cleric", "i"))
+
+  # Consecrated Life / Religious Orders
+  # Includes: Religious Brothers, Religious Sisters, Male Religious, Female Religious
+  consecrated_life:
+    label: "Consecrated Life"
+    description: "Religious institutes, orders, and consecrated persons"
+    root_classes:
+      - id: "RDUOYPsMTjLKT8XTp6oHH2o"
+        label: "Consecrated Persons"
+    # Legacy regex for reference (to be deprecated):
+    # FILTER(REGEX(STR(?label), "Religious|Order|Monk|Friar|Sister|Brother|Consecrated|Institute|Congregation|Novice|Vow", "i"))
+
+  # Sacraments
+  # Includes: Sacraments of Initiation, Sacraments at Service of Communion
+  sacraments:
+    label: "Sacraments"
+    description: "The seven sacraments and related concepts"
+    root_classes:
+      - id: "RB91Ir5bSOsoHyaGccORDpQ"
+        label: "Sacraments"
+    # Legacy regex for reference (to be deprecated):
+    # FILTER(REGEX(STR(?label), "Sacrament|Baptism|Confirmation|Eucharist|Penance|Confession|Anointing|Holy Orders|Matrimony|Marriage|Communion", "i"))
+
+  # Liturgy
+  # Includes: Mass, Rite, liturgical celebrations
+  liturgy:
+    label: "Liturgy"
+    description: "Liturgical celebrations, rites, and worship"
+    root_classes:
+      - id: "RDiYA0x2kAubW5cDdOR4oZV"
+        label: "Liturgy"
+    # Legacy regex for reference (to be deprecated):
+    # FILTER(REGEX(STR(?label), "Liturgy|Mass|Rite|Worship|Celebration|Divine Office|Hours", "i"))
+
+  # Religious Events (parent category including Sacraments and Liturgy)
+  religious_events:
+    label: "Religious Events"
+    description: "All ecclesial events including sacraments and liturgy"
+    root_classes:
+      - id: "RBypJHdXoQQwqYlG95KCDCQ"
+        label: "Religious Events"
+
+  # Religious Law Systems (including Canon Law)
+  # Note: Canon Law System currently has no subclasses in the ontology.
+  # Using Religious Law System as root to show available law systems.
+  canon_law:
+    label: "Religious Law Systems"
+    description: "Religious law systems including Canon Law, Islamic Law, Jewish Law"
+    root_classes:
+      - id: "RM8uFdNbkVDabwW32Bv8E"
+        label: "Religious Law System"
+      # Canon Law System (no subclasses yet):
+      # - id: "RDCWfUYXx114d8AdyJQmbzH"
+      #   label: "Canon Law System"
+    # Legacy regex for reference (to be deprecated):
+    # FILTER(REGEX(STR(?label), "Canon|Code|Decree|Encyclical|Apostolic|Motu Proprio|Rescript|Indult|Dispensation|Document|Text", "i"))
+
+# Note: The following categories from the original queries may need
+# additional root classes to be defined in WebProtege:
+#
+# - juridical_structures: Diocese, Parish, Archdiocese, Holy See, etc.
+#   (Need to identify or create a JuridicalEntity root class)
+#
+# - authority_properties: Authority-related object properties
+#   (These are properties, not classes - different query pattern needed)

@@ -1,0 +1,20 @@
+# Build artifacts
+examples/java/target/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Cache files
+*.pickle
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db

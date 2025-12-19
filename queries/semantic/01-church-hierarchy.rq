@@ -1,0 +1,42 @@
+# Semantic Query: Church Hierarchy / Clergy
+# Shows all clergy-related classes in the ontology hierarchy.
+#
+# Root class: Clergy (RChKPk9K152BirrIYgAREsY)
+# Includes: Pope, Cardinal, Archbishop, Bishop, Priest, Deacon, etc.
+#
+# Note: Simplified to avoid rdflib/Python 3.12 segfaults.
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT ?label ?definition ?parentLabel
+WHERE {
+  # Level 1: direct children of Clergy
+  {
+    ?class rdfs:subClassOf osc:RChKPk9K152BirrIYgAREsY ;
+           rdfs:label ?label .
+    osc:RChKPk9K152BirrIYgAREsY rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 2: grandchildren
+  {
+    ?parent rdfs:subClassOf osc:RChKPk9K152BirrIYgAREsY .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 3: great-grandchildren
+  {
+    ?grandparent rdfs:subClassOf osc:RChKPk9K152BirrIYgAREsY .
+    ?parent rdfs:subClassOf ?grandparent .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+}
+LIMIT 100

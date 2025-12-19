@@ -1,0 +1,42 @@
+# Semantic Query: Sacraments
+# Shows all sacrament-related classes in the ontology hierarchy.
+#
+# Root class: Sacraments (RB91Ir5bSOsoHyaGccORDpQ)
+# Includes: Sacraments of Initiation, Sacraments at Service of Communion, etc.
+#
+# Note: Simplified to avoid rdflib/Python 3.12 segfaults.
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT ?label ?definition ?parentLabel
+WHERE {
+  # Level 1: direct children of Sacraments
+  {
+    ?class rdfs:subClassOf osc:RB91Ir5bSOsoHyaGccORDpQ ;
+           rdfs:label ?label .
+    osc:RB91Ir5bSOsoHyaGccORDpQ rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 2: grandchildren
+  {
+    ?parent rdfs:subClassOf osc:RB91Ir5bSOsoHyaGccORDpQ .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 3: great-grandchildren
+  {
+    ?grandparent rdfs:subClassOf osc:RB91Ir5bSOsoHyaGccORDpQ .
+    ?parent rdfs:subClassOf ?grandparent .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+}
+LIMIT 100
