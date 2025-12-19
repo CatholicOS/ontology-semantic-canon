@@ -32,7 +32,7 @@ SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
 SOURCES_DIR = PROJECT_ROOT / "sources"
 QUERIES_DIR = PROJECT_ROOT / "queries"
-SEMANTIC_QUERIES_DIR = QUERIES_DIR / "semantic"
+RDFLIB_QUERIES_DIR = QUERIES_DIR / "rdflib"
 
 # Default ontology file (OWL/XML format with pickle caching for stability)
 DEFAULT_ONTOLOGY = SOURCES_DIR / "ontology-semantic-canon.owl"
@@ -87,10 +87,10 @@ def list_queries(semantic: bool = False) -> list[Path]:
     """List all available query files.
 
     Args:
-        semantic: If True, list queries from the semantic/ subdirectory
-                  which use rdfs:subClassOf* property paths instead of regex.
+        semantic: If True, list queries from the rdflib/ subdirectory
+                  which use semantic patterns optimized for rdflib/Python.
     """
-    query_dir = SEMANTIC_QUERIES_DIR if semantic else QUERIES_DIR
+    query_dir = RDFLIB_QUERIES_DIR if semantic else QUERIES_DIR
 
     if not query_dir.exists():
         print(f"Error: Queries directory not found: {query_dir}")
@@ -158,8 +158,8 @@ def interactive_menu(graph: Graph, semantic: bool = False) -> None:
     """Show an interactive menu to select and run queries.
 
     Args:
-        semantic: If True, show semantic queries (using property paths)
-                  instead of regex-based queries.
+        semantic: If True, show semantic queries from queries/rdflib/
+                  instead of regex-based queries from queries/.
     """
     queries = list_queries(semantic=semantic)
 
@@ -172,7 +172,7 @@ def interactive_menu(graph: Graph, semantic: bool = False) -> None:
         print("\n" + "=" * 60)
         print(f"Available {query_type} SPARQL Queries:")
         if semantic:
-            print("(Using rdfs:subClassOf* property paths instead of regex)")
+            print("(Optimized for rdflib - use queries/jena/ with arq for full features)")
         print("=" * 60)
 
         for i, q in enumerate(queries, 1):

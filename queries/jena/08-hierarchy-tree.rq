@@ -1,0 +1,55 @@
+# Semantic Query: Full Class Hierarchy Tree
+# Shows the complete class hierarchy with parent-child relationships
+#
+# This query helps visualize the ontology structure and verify
+# that semantic queries are correctly traversing the hierarchy.
+#
+# Requires: Apache Jena (arq) - uses full SPARQL 1.1 features
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT DISTINCT ?class ?label ?parentClass ?parentLabel ?depth
+WHERE {
+  # Start from key root classes
+  VALUES ?rootClass {
+    osc:RChKPk9K152BirrIYgAREsY    # Clergy
+    osc:RDUOYPsMTjLKT8XTp6oHH2o    # Consecrated Persons
+    osc:RB91Ir5bSOsoHyaGccORDpQ    # Sacraments
+    osc:RDiYA0x2kAubW5cDdOR4oZV    # Liturgy
+    osc:RM8uFdNbkVDabwW32Bv8E      # Religious Law System
+  }
+
+  ?class rdfs:subClassOf* ?rootClass .
+  ?class a owl:Class .
+  ?class rdfs:label ?label .
+
+  # Get parent for hierarchy display
+  OPTIONAL {
+    ?class rdfs:subClassOf ?parentClass .
+    ?parentClass a owl:Class .
+    ?parentClass rdfs:label ?parentLabel .
+    FILTER(?parentClass != owl:Thing)
+  }
+
+  # Calculate depth (approximate - counts subClassOf hops)
+  {
+    SELECT ?class (COUNT(?mid) AS ?depth)
+    WHERE {
+      ?class rdfs:subClassOf* ?mid .
+      ?mid rdfs:subClassOf* ?rootClass .
+      VALUES ?rootClass {
+        osc:RChKPk9K152BirrIYgAREsY
+        osc:RDUOYPsMTjLKT8XTp6oHH2o
+        osc:RB91Ir5bSOsoHyaGccORDpQ
+        osc:RDiYA0x2kAubW5cDdOR4oZV
+        osc:RM8uFdNbkVDabwW32Bv8E
+      }
+    }
+    GROUP BY ?class
+  }
+}
+ORDER BY ?depth ?parentLabel ?label

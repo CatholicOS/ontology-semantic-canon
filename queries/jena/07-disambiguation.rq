@@ -1,0 +1,45 @@
+# Semantic Query: Term Disambiguation
+# Finds classes with potentially ambiguous labels and shows their context
+#
+# This query helps disambiguate terms like "Brother" (monastic vs. sibling)
+# by showing the class hierarchy and SKOS annotations.
+#
+# Use this query to understand the semantic context of ambiguous terms.
+#
+# Requires: Apache Jena (arq) - uses full SPARQL 1.1 features
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT DISTINCT ?class ?label ?altLabel ?scopeNote ?definition ?parentClass ?parentLabel
+WHERE {
+  ?class a owl:Class .
+  ?class rdfs:label ?label .
+
+  # Filter for potentially ambiguous terms
+  FILTER(REGEX(STR(?label), "^(Brother|Sister|Order|Mass|Canon|Office|Ministry|Father)$", "i"))
+
+  # Restrict to Catholic ontology namespace
+  FILTER(STRSTARTS(STR(?class), "https://ontology.catholicos.catholic/"))
+
+  # Get alternate labels for disambiguation
+  OPTIONAL { ?class skos:altLabel ?altLabel }
+
+  # Get scope note (disambiguation context)
+  OPTIONAL { ?class skos:scopeNote ?scopeNote }
+
+  # Get definition
+  OPTIONAL { ?class skos:definition ?definition }
+
+  # Show parent class for context
+  OPTIONAL {
+    ?class rdfs:subClassOf ?parentClass .
+    ?parentClass a owl:Class .
+    ?parentClass rdfs:label ?parentLabel .
+    FILTER(?parentClass != owl:Thing)
+  }
+}
+ORDER BY ?label ?parentLabel

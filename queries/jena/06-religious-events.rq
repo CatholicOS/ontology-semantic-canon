@@ -1,0 +1,36 @@
+# Semantic Query: Religious Events (Comprehensive)
+# Uses rdfs:subClassOf* property path to find all subclasses of Religious Events
+#
+# This is a broader query that includes both Sacraments and Liturgy,
+# as well as any other ecclesial events.
+#
+# Root class: Religious Events (RBypJHdXoQQwqYlG95KCDCQ)
+# Includes: Sacraments, Liturgy, and all their subclasses
+#
+# Requires: Apache Jena (arq) - uses full SPARQL 1.1 features
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT DISTINCT ?class ?label ?definition ?parentClass ?parentLabel
+WHERE {
+  # Find all classes that are subclasses of Religious Events
+  ?class rdfs:subClassOf* osc:RBypJHdXoQQwqYlG95KCDCQ .
+  ?class a owl:Class .
+  ?class rdfs:label ?label .
+
+  # Optional: Get the definition
+  OPTIONAL { ?class skos:definition ?definition }
+
+  # Optional: Show immediate parent class for hierarchy context
+  OPTIONAL {
+    ?class rdfs:subClassOf ?parentClass .
+    ?parentClass a owl:Class .
+    ?parentClass rdfs:label ?parentLabel .
+    FILTER(?parentClass != owl:Thing)
+  }
+}
+ORDER BY ?parentLabel ?label

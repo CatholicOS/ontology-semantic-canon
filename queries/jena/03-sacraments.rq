@@ -1,0 +1,36 @@
+# Semantic Query: Sacraments
+# Uses rdfs:subClassOf* property path to find all subclasses of Sacraments
+#
+# This query automatically includes any new sacrament-related concepts
+# added in WebProtege under the Sacraments hierarchy.
+#
+# Root class: Sacraments (RB91Ir5bSOsoHyaGccORDpQ)
+# Includes: Sacraments of Initiation, Sacraments at Service of Communion, etc.
+#
+# Requires: Apache Jena (arq) - uses full SPARQL 1.1 features
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT DISTINCT ?class ?label ?definition ?parentClass ?parentLabel
+WHERE {
+  # Find all classes that are subclasses of Sacraments
+  ?class rdfs:subClassOf* osc:RB91Ir5bSOsoHyaGccORDpQ .
+  ?class a owl:Class .
+  ?class rdfs:label ?label .
+
+  # Optional: Get the definition
+  OPTIONAL { ?class skos:definition ?definition }
+
+  # Optional: Show immediate parent class for hierarchy context
+  OPTIONAL {
+    ?class rdfs:subClassOf ?parentClass .
+    ?parentClass a owl:Class .
+    ?parentClass rdfs:label ?parentLabel .
+    FILTER(?parentClass != owl:Thing)
+  }
+}
+ORDER BY ?parentLabel ?label
