@@ -61,7 +61,8 @@ python query_runner.py 01           # Run specific query
 python query_runner.py --list       # List all queries
 ```
 
-**Java (Apache Jena / Maven)**
+**Java (Apache Jena / Maven)** — [Full documentation](examples/java/README.md)
+
 ```bash
 cd examples/java
 mvn compile exec:java                           # Interactive menu
@@ -75,7 +76,7 @@ java -jar target/semantic-canon-query-runner-1.0.0.jar
 
 #### Using Apache Jena (Command Line)
 
-If you have [Apache Jena](https://jena.apache.org/) installed globally, use the `arq` command:
+If you have [Apache Jena](https://jena.apache.org/) installed globally, use the `arq` command. See the [Java example documentation](examples/java/README.md#installing-apache-jena-globally) for installation instructions.
 
 ```bash
 # Run a query against the OWL file
