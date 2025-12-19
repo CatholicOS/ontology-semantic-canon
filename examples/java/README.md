@@ -4,22 +4,37 @@ This example demonstrates how to query the Catholic Semantic Canon ontology usin
 
 ## Prerequisites
 
-- **Java 17+** (or Java 11+ with pom.xml adjustments)
+- **Java 17+** (Java 21 LTS recommended, or Java 11+ with pom.xml adjustments)
 - **Maven 3.6+**
 
 ### Installing Java
 
 **Ubuntu/Debian:**
 ```bash
+# Java 21 (recommended - latest LTS)
+sudo apt install openjdk-21-jdk
+
+# Or Java 17 (previous LTS)
 sudo apt install openjdk-17-jdk
 ```
 
 **macOS (Homebrew):**
 ```bash
+# Java 21 (recommended - latest LTS)
+brew install openjdk@21
+
+# Or Java 17 (previous LTS)
 brew install openjdk@17
 ```
 
-**Windows:** Download from https://adoptium.net/ or use `winget install EclipseAdoptium.Temurin.17.JDK`
+**Windows:** Download from https://adoptium.net/ or use:
+```powershell
+# Java 21 (recommended - latest LTS)
+winget install EclipseAdoptium.Temurin.21.JDK
+
+# Or Java 17 (previous LTS)
+winget install EclipseAdoptium.Temurin.17.JDK
+```
 
 ### Installing Maven
 
