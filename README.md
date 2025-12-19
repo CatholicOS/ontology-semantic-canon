@@ -29,7 +29,7 @@ but how they relate to one another in terms of authority, chronology, and theolo
 
 The primary "source of truth" for this ontology is hosted on **WebProtégé**. To ensure data integrity and collaborative consistency, all structural edits and maintenance are managed through that platform.
 
-* **Access the Model:** [Catholic OS Ontolgoy on WebProtégé](https://webprotege.stanford.edu/#projects/75e2824f-d4e7-4a73-83be-1574345b9f28)
+* **Access the Model:** [Catholic OS Ontology on WebProtégé](https://webprotege.stanford.edu/#projects/75e2824f-d4e7-4a73-83be-1574345b9f28)
 * **Contributions:** Contributors should request access via the WebProtégé link above. All edits to classes and relationships should be made directly in the instance.
 * **Issue Tracking:** Please use the **GitHub Issues** tab to propose major structural changes or discuss ontological definitions.
 * **Versioning:** Versioning and exports are handled by the maintainers via WebProtégé. Direct Pull Requests to the ontology files in this repo will generally not be accepted.
