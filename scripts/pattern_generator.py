@@ -127,7 +127,7 @@ def get_default_config() -> dict:
 def get_subclass_labels(graph: Graph, root_uri: URIRef) -> set:
     """
     Get all labels for classes that are subclasses of the given root class.
-    Uses SPARQL with rdfs:subClassOf* property path.
+    Uses UNION patterns to emulate rdfs:subClassOf* (avoids rdflib segfaults).
 
     Security note: root_uri is interpolated into the SPARQL query string.
     Only pass URIRef objects from trusted sources (e.g., config files).
@@ -137,14 +137,36 @@ def get_subclass_labels(graph: Graph, root_uri: URIRef) -> set:
     if not uri_str.startswith(("http://", "https://")) or any(c in uri_str for c in ['>', '<', '"', "'"]):
         raise ValueError(f"Invalid URI format: {uri_str}")
 
+    # Use UNION patterns instead of rdfs:subClassOf* to avoid Python 3.12 segfaults
     query = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
-    SELECT DISTINCT ?label
+    SELECT ?label
     WHERE {
-      ?class rdfs:subClassOf* <%s> .
+      {
+        # Level 0: root class itself
+        BIND(<%s> AS ?class)
+      }
+      UNION
+      {
+        # Level 1: direct children
+        ?class rdfs:subClassOf <%s> .
+      }
+      UNION
+      {
+        # Level 2: grandchildren
+        ?parent rdfs:subClassOf <%s> .
+        ?class rdfs:subClassOf ?parent .
+      }
+      UNION
+      {
+        # Level 3: great-grandchildren
+        ?grandparent rdfs:subClassOf <%s> .
+        ?parent rdfs:subClassOf ?grandparent .
+        ?class rdfs:subClassOf ?parent .
+      }
       ?class a owl:Class .
       {
         ?class rdfs:label ?label .
@@ -158,7 +180,7 @@ def get_subclass_labels(graph: Graph, root_uri: URIRef) -> set:
         ?class skos:prefLabel ?label .
       }
     }
-    """ % uri_str
+    """ % (uri_str, uri_str, uri_str, uri_str)
 
     labels = set()
     try:
@@ -178,6 +200,7 @@ def get_subclass_labels(graph: Graph, root_uri: URIRef) -> set:
 def get_subclass_uris(graph: Graph, root_uri: URIRef) -> list:
     """
     Get all URIs for classes that are subclasses of the given root class.
+    Uses UNION patterns to emulate rdfs:subClassOf* (avoids rdflib segfaults).
 
     Security note: root_uri is interpolated into the SPARQL query string.
     Only pass URIRef objects from trusted sources (e.g., config files).
@@ -187,26 +210,48 @@ def get_subclass_uris(graph: Graph, root_uri: URIRef) -> list:
     if not uri_str.startswith(("http://", "https://")) or any(c in uri_str for c in ['>', '<', '"', "'"]):
         raise ValueError(f"Invalid URI format: {uri_str}")
 
+    # Use UNION patterns instead of rdfs:subClassOf* to avoid Python 3.12 segfaults
     query = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-    SELECT DISTINCT ?class
+    SELECT ?class
     WHERE {
-      ?class rdfs:subClassOf* <%s> .
+      {
+        # Level 0: root class itself
+        BIND(<%s> AS ?class)
+      }
+      UNION
+      {
+        # Level 1: direct children
+        ?class rdfs:subClassOf <%s> .
+      }
+      UNION
+      {
+        # Level 2: grandchildren
+        ?parent rdfs:subClassOf <%s> .
+        ?class rdfs:subClassOf ?parent .
+      }
+      UNION
+      {
+        # Level 3: great-grandchildren
+        ?grandparent rdfs:subClassOf <%s> .
+        ?parent rdfs:subClassOf ?grandparent .
+        ?class rdfs:subClassOf ?parent .
+      }
       ?class a owl:Class .
     }
-    """ % uri_str
+    """ % (uri_str, uri_str, uri_str, uri_str)
 
-    uris = []
+    uris = set()
     try:
         for row in graph.query(query):
             if row["class"]:
-                uris.append(str(row["class"]))
+                uris.add(str(row["class"]))
     except (TypeError, ValueError, AttributeError, KeyError) as e:
         print(f"  Warning: Query failed for {root_uri}: {e}")
 
-    return uris
+    return list(uris)
 
 
 def generate_regex_pattern(labels: set) -> str:
