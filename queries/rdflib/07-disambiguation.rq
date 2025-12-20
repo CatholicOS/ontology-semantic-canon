@@ -4,6 +4,10 @@
 # This query helps disambiguate terms like "Brother" (monastic vs. sibling)
 # by showing the parent class for context.
 #
+# MAINTENANCE NOTE: The VALUES clause below must be manually updated when new
+# ambiguous terms are added to the ontology. Future enhancement: use SKOS
+# annotations (e.g., skos:scopeNote) to mark ambiguous terms automatically.
+#
 # Note: Uses VALUES clause with specific URIs to avoid rdflib segfaults.
 
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
