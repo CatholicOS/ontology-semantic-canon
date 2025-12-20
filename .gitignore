@@ -9,6 +9,13 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.local
 
 # Cache files
 *.pickle
