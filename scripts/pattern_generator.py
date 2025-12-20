@@ -103,7 +103,17 @@ def load_config(config_path: Path) -> dict:
         return get_default_config()
 
     with open(config_path) as f:
-        return yaml.safe_load(f)
+        config = yaml.safe_load(f)
+
+    # Validate structure
+    if not isinstance(config, dict):
+        print("Warning: Invalid config structure, using defaults.")
+        return get_default_config()
+    if "categories" not in config or not isinstance(config["categories"], dict):
+        print("Warning: Config missing 'categories', using defaults.")
+        return get_default_config()
+
+    return config
 
 
 def get_default_config() -> dict:
