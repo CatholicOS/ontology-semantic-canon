@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The **Catholic Semantic Canon** is a formal OWL ontology modeling the Catholic Deposit of Faith - the hierarchical and relational structure of Sacred Scripture, Sacred Tradition, and the Magisterium. The ontology provides machine-readable semantic data (120,000+ triples) for theological concepts including church hierarchy, sacraments, religious orders, liturgy, and canon law.
 
-**Source of Truth**: The ontology is maintained in WebProtege at https://webprotege.stanford.edu/#projects/75e2824f-d4e7-4a73-83be-1574345b9f28. Direct PRs to ontology files are generally not accepted.
+**Source of Truth**: The ontology is maintained in [WebProtege](https://webprotege.stanford.edu/#projects/75e2824f-d4e7-4a73-83be-1574345b9f28). Direct PRs to ontology files are generally not accepted.
 
 ## Running SPARQL Queries
 
