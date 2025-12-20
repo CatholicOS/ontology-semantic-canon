@@ -12,8 +12,13 @@
 #   python scripts/find_ambiguous_terms.py
 #
 # After updating this list, also update:
-#   - queries/jena/07-disambiguation.rq (FILTER clause)
-#   - queries/rdflib/07-disambiguation.rq (VALUES clause URIs)
+#   - queries/jena/07-disambiguation.rq (FILTER clause - uses term strings)
+#   - queries/rdflib/07-disambiguation.rq (VALUES clause - uses class URIs)
+#
+# Note: The Jena query uses term strings while the rdflib query requires
+# specific class URIs. Use find_ambiguous_terms.py to identify URIs.
+# Future enhancement: extend pattern_generator.py to auto-generate query
+# fragments from this config.
 
 ambiguous_terms:
   - brother
