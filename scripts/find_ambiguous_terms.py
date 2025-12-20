@@ -16,7 +16,7 @@ Output:
 from pathlib import Path
 from collections import defaultdict
 
-from rdflib import Graph, Namespace, RDF, RDFS, OWL
+from rdflib import BNode, Graph, Namespace, RDF, RDFS, OWL
 from rdflib.namespace import SKOS
 
 # Ontology namespace
@@ -71,7 +71,7 @@ def find_ambiguous_labels(g):
 
     for class_uri in g.subjects(RDF.type, OWL.Class):
         # Skip blank nodes
-        if not hasattr(class_uri, 'startswith'):
+        if isinstance(class_uri, BNode):
             continue
         # Only consider our ontology namespace
         if not str(class_uri).startswith(str(OSC)):
