@@ -37,6 +37,29 @@ def load_ontology():
     return g
 
 
+def _process_label(g, class_uri, label_predicate, label_to_classes, is_alt=False):
+    """Helper to process labels for a given predicate."""
+    for label in g.objects(class_uri, label_predicate):
+        label_str = str(label).lower().strip()
+
+        # Get parent classes for context
+        parents = []
+        for parent in g.objects(class_uri, RDFS.subClassOf):
+            if parent == OWL.Thing:
+                continue
+            for parent_label in g.objects(parent, RDFS.label):
+                parents.append(str(parent_label))
+
+        entry = {
+            'uri': str(class_uri),
+            'label': str(label),
+            'parents': parents
+        }
+        if is_alt:
+            entry['is_alt'] = True
+        label_to_classes[label_str].append(entry)
+
+
 def find_ambiguous_labels(g):
     """
     Find labels that appear on multiple classes.
@@ -54,41 +77,9 @@ def find_ambiguous_labels(g):
         if not str(class_uri).startswith(str(OSC)):
             continue
 
-        # Get rdfs:label
-        for label in g.objects(class_uri, RDFS.label):
-            label_str = str(label).lower().strip()
-
-            # Get parent classes for context
-            parents = []
-            for parent in g.objects(class_uri, RDFS.subClassOf):
-                if parent == OWL.Thing:
-                    continue
-                for parent_label in g.objects(parent, RDFS.label):
-                    parents.append(str(parent_label))
-
-            label_to_classes[label_str].append({
-                'uri': str(class_uri),
-                'label': str(label),
-                'parents': parents
-            })
-
-        # Also check skos:altLabel
-        for alt_label in g.objects(class_uri, SKOS.altLabel):
-            label_str = str(alt_label).lower().strip()
-
-            parents = []
-            for parent in g.objects(class_uri, RDFS.subClassOf):
-                if parent == OWL.Thing:
-                    continue
-                for parent_label in g.objects(parent, RDFS.label):
-                    parents.append(str(parent_label))
-
-            label_to_classes[label_str].append({
-                'uri': str(class_uri),
-                'label': str(alt_label),
-                'parents': parents,
-                'is_alt': True
-            })
+        # Get rdfs:label and skos:altLabel
+        _process_label(g, class_uri, RDFS.label, label_to_classes)
+        _process_label(g, class_uri, SKOS.altLabel, label_to_classes, is_alt=True)
 
     # Filter to only labels that appear on multiple classes
     ambiguous = {
