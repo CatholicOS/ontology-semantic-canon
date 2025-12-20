@@ -28,7 +28,7 @@ WHERE {
     OPTIONAL { ?class skos:definition ?definition }
   }
   UNION
-  # Level 2: grandchildren (if any exist in future)
+  # Level 2: grandchildren
   {
     ?parent rdfs:subClassOf osc:RM8uFdNbkVDabwW32Bv8E .
     ?class rdfs:subClassOf ?parent ;
@@ -36,5 +36,15 @@ WHERE {
     ?parent rdfs:label ?parentLabel .
     OPTIONAL { ?class skos:definition ?definition }
   }
+  UNION
+  # Level 3: great-grandchildren
+  {
+    ?grandparent rdfs:subClassOf osc:RM8uFdNbkVDabwW32Bv8E .
+    ?parent rdfs:subClassOf ?grandparent .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
 }
-LIMIT 50
+LIMIT 100
