@@ -128,7 +128,15 @@ def get_subclass_labels(graph: Graph, root_uri: URIRef) -> set:
     """
     Get all labels for classes that are subclasses of the given root class.
     Uses SPARQL with rdfs:subClassOf* property path.
+
+    Security note: root_uri is interpolated into the SPARQL query string.
+    Only pass URIRef objects from trusted sources (e.g., config files).
     """
+    # Validate URI format to prevent injection
+    uri_str = str(root_uri)
+    if not uri_str.startswith(("http://", "https://")) or any(c in uri_str for c in ['>', '<', '"', "'"]):
+        raise ValueError(f"Invalid URI format: {uri_str}")
+
     query = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -150,7 +158,7 @@ def get_subclass_labels(graph: Graph, root_uri: URIRef) -> set:
         ?class skos:prefLabel ?label .
       }
     }
-    """ % str(root_uri)
+    """ % uri_str
 
     labels = set()
     try:
@@ -170,7 +178,15 @@ def get_subclass_labels(graph: Graph, root_uri: URIRef) -> set:
 def get_subclass_uris(graph: Graph, root_uri: URIRef) -> list:
     """
     Get all URIs for classes that are subclasses of the given root class.
+
+    Security note: root_uri is interpolated into the SPARQL query string.
+    Only pass URIRef objects from trusted sources (e.g., config files).
     """
+    # Validate URI format to prevent injection
+    uri_str = str(root_uri)
+    if not uri_str.startswith(("http://", "https://")) or any(c in uri_str for c in ['>', '<', '"', "'"]):
+        raise ValueError(f"Invalid URI format: {uri_str}")
+
     query = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -180,7 +196,7 @@ def get_subclass_uris(graph: Graph, root_uri: URIRef) -> list:
       ?class rdfs:subClassOf* <%s> .
       ?class a owl:Class .
     }
-    """ % str(root_uri)
+    """ % uri_str
 
     uris = []
     try:
