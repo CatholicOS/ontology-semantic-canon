@@ -13,12 +13,8 @@ Output:
     showing the class URIs and their parent classes.
 """
 
-import os
-import sys
+from pathlib import Path
 from collections import defaultdict
-
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from rdflib import Graph, Namespace, RDF, RDFS, OWL
 from rdflib.namespace import SKOS
@@ -27,11 +23,9 @@ from rdflib.namespace import SKOS
 OSC = Namespace("https://ontology.catholicos.catholic/")
 
 # Path to ontology file
-ONTOLOGY_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "sources",
-    "ontology-semantic-canon.ttl"
-)
+SCRIPT_DIR = Path(__file__).parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+ONTOLOGY_PATH = PROJECT_ROOT / "sources" / "ontology-semantic-canon.ttl"
 
 
 def load_ontology():
