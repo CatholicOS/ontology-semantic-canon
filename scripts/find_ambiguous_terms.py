@@ -13,10 +13,12 @@ Output:
     showing the class URIs and their parent classes.
 """
 
+import sys
 from pathlib import Path
 from collections import defaultdict
 
 from rdflib import BNode, Graph, Namespace, RDF, RDFS, OWL
+from rdflib.exceptions import ParserError
 from rdflib.namespace import SKOS
 
 # Ontology namespace
@@ -143,7 +145,7 @@ def main():
         print(f"Error: Ontology file not found at {ONTOLOGY_PATH}")
         print("Make sure you have the TTL file in the sources/ directory.")
         sys.exit(1)
-    except Exception as e:
+    except (ParserError, OSError) as e:
         print(f"Error loading ontology: {e}")
         sys.exit(1)
 
