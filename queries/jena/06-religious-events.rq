@@ -15,12 +15,15 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX osc: <https://ontology.catholicos.catholic/>
 
-SELECT DISTINCT ?class ?label ?definition ?parentClass ?parentLabel
+SELECT DISTINCT ?class ?label ?altLabel ?definition ?parentClass ?parentLabel
 WHERE {
   # Find all classes that are subclasses of Religious Events
   ?class rdfs:subClassOf* osc:RBypJHdXoQQwqYlG95KCDCQ .
   ?class a owl:Class .
   ?class rdfs:label ?label .
+
+  # Optional: Get alternate labels (synonyms, Latin terms)
+  OPTIONAL { ?class skos:altLabel ?altLabel }
 
   # Optional: Get the definition
   OPTIONAL { ?class skos:definition ?definition }
