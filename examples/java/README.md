@@ -10,6 +10,7 @@ This example demonstrates how to query the Catholic Semantic Canon ontology usin
 ### Installing Java
 
 **Ubuntu/Debian:**
+
 ```bash
 # Java 21 (recommended - latest LTS)
 sudo apt install openjdk-21-jdk
@@ -19,6 +20,7 @@ sudo apt install openjdk-17-jdk
 ```
 
 **macOS (Homebrew):**
+
 ```bash
 # Java 21 (recommended - latest LTS)
 brew install openjdk@21
@@ -27,7 +29,8 @@ brew install openjdk@21
 brew install openjdk@17
 ```
 
-**Windows:** Download from https://adoptium.net/ or use:
+**Windows:** Download from <https://adoptium.net/> or use:
+
 ```powershell
 # Java 21 (recommended - latest LTS)
 winget install EclipseAdoptium.Temurin.21.JDK
@@ -39,18 +42,21 @@ winget install EclipseAdoptium.Temurin.17.JDK
 ### Installing Maven
 
 **Ubuntu/Debian:**
+
 ```bash
 sudo apt install maven
 ```
 
 **macOS (Homebrew):**
+
 ```bash
 brew install maven
 ```
 
-**Windows:** Download from https://maven.apache.org/download.cgi and follow the [installation guide](https://maven.apache.org/install.html), or use `winget install Apache.Maven`
+**Windows:** Download from <https://maven.apache.org/download.cgi> and follow the [installation guide](https://maven.apache.org/install.html), or use `winget install Apache.Maven`
 
 Verify installation:
+
 ```bash
 java -version
 mvn -version
@@ -123,7 +129,7 @@ source ~/.bashrc
 
 ### Windows (PowerShell)
 
-1. Download from https://jena.apache.org/download/
+1. Download from <https://jena.apache.org/download/>
 2. Extract to a folder like `C:\tools\apache-jena-5.6.0`
 3. Add to PATH via System Properties > Environment Variables:
    - Add `JENA_HOME` = `C:\tools\apache-jena-5.6.0`
@@ -136,7 +142,8 @@ arq --version
 ```
 
 You should see output like:
-```
+
+```text
 Apache Jena ARQ - 5.6.0
 ```
 
@@ -163,13 +170,13 @@ arq --data=sources/ontology-semantic-canon.owl --query=queries/01-list-all-class
 
 ### Common `arq` Options
 
-| Option | Description |
-|--------|-------------|
-| `--data=FILE` | Load RDF data from file |
-| `--query=FILE` | Execute SPARQL query from file |
+| Option             | Description                                                  |
+| ------------------ | ------------------------------------------------------------ |
+| `--data=FILE`      | Load RDF data from file                                      |
+| `--query=FILE`     | Execute SPARQL query from file                               |
 | `--results=FORMAT` | Output format: `text` (default), `CSV`, `TSV`, `JSON`, `XML` |
-| `--quiet` | Suppress progress messages |
-| `--time` | Show execution time |
+| `--quiet`          | Suppress progress messages                                   |
+| `--time`           | Show execution time                                          |
 
 ---
 
@@ -177,12 +184,12 @@ arq --data=sources/ontology-semantic-canon.owl --query=queries/01-list-all-class
 
 Apache Jena includes several other useful tools:
 
-| Tool | Description |
-|------|-------------|
-| `arq` | Run SPARQL queries |
-| `riot` | Parse/validate/convert RDF data |
-| `tdb2.tdbloader` | Load data into TDB2 database |
-| `fuseki-server` | Start a SPARQL endpoint server |
+| Tool             | Description                     |
+| ---------------- | ------------------------------- |
+| `arq`            | Run SPARQL queries              |
+| `riot`           | Parse/validate/convert RDF data |
+| `tdb2.tdbloader` | Load data into TDB2 database    |
+| `fuseki-server`  | Start a SPARQL endpoint server  |
 
 ### Examples
 
@@ -204,18 +211,21 @@ riot --output=turtle sources/ontology-semantic-canon.owl > output.ttl
 ### Maven not found
 
 Install Maven:
+
 - **Ubuntu/Debian**: `sudo apt install maven`
 - **macOS**: `brew install maven`
-- **Windows**: Download from https://maven.apache.org/download.cgi
+- **Windows**: Download from <https://maven.apache.org/download.cgi>
 
 ### Java version errors
 
 Ensure you have Java 17+:
+
 ```bash
 java -version
 ```
 
 If you need Java 11 compatibility, update `pom.xml`:
+
 ```xml
 <maven.compiler.source>11</maven.compiler.source>
 <maven.compiler.target>11</maven.compiler.target>

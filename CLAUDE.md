@@ -4,9 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-The **Catholic Semantic Canon** is a formal OWL ontology modeling the Catholic Deposit of Faith - the hierarchical and relational structure of Sacred Scripture, Sacred Tradition, and the Magisterium. The ontology provides machine-readable semantic data (120,000+ triples) for theological concepts including church hierarchy, sacraments, religious orders, liturgy, and canon law.
+The **Catholic Semantic Canon** is a formal OWL ontology modeling the Catholic Deposit of Faith - the hierarchical and relational structure of Sacred Scripture,
+Sacred Tradition, and the Magisterium. The ontology provides machine-readable semantic data (120,000+ triples) for theological concepts including church hierarchy,
+sacraments, religious orders, liturgy, and canon law.
 
-**Source of Truth**: The ontology is maintained in [WebProtege](https://webprotege.stanford.edu/#projects/75e2824f-d4e7-4a73-83be-1574345b9f28). Direct PRs to ontology files are generally not accepted.
+**Source of Truth**: The ontology is maintained in [WebProtege](https://webprotege.stanford.edu/#projects/75e2824f-d4e7-4a73-83be-1574345b9f28).
+Direct PRs to ontology files are generally not accepted.
 
 ## Running SPARQL Queries
 
@@ -67,14 +70,14 @@ examples/java/              # Java query runner using Apache Jena
 
 ## Query Engine Differences
 
-| Feature | queries/jena/ | queries/rdflib/ |
-|---------|---------------|-----------------|
-| Engine | Apache Jena (arq) | Python rdflib |
-| Property paths | `rdfs:subClassOf*` | UNION patterns (3 levels) |
-| DISTINCT | Yes | No |
-| ORDER BY | Yes | No |
-| Multiple OPTIONALs | Yes | Limited |
-| Stability | Reliable | May segfault on Python 3.12 |
+| Feature            | queries/jena/      | queries/rdflib/             |
+| ------------------ | ------------------ | --------------------------- |
+| Engine             | Apache Jena (arq)  | Python rdflib               |
+| Property paths     | `rdfs:subClassOf*` | UNION patterns (3 levels)   |
+| DISTINCT           | Yes                | No                          |
+| ORDER BY           | Yes                | No                          |
+| Multiple OPTIONALs | Yes                | Limited                     |
+| Stability          | Reliable           | May segfault on Python 3.12 |
 
 Use `queries/jena/` with `arq` for full hierarchy traversal and complex queries. Use `queries/rdflib/` with the Python query runner for stable execution.
 
@@ -101,4 +104,5 @@ bun run format:md          # Format markdown with prettier
 
 ## Git Workflow
 
-**Do not push until explicitly told.** This repository uses CodeRabbit for automated code review, which is rate-limited. Batch commits locally and wait for user confirmation before pushing to avoid overwhelming the review system.
+**Do not push until explicitly told.** This repository uses CodeRabbit for automated code review, which is rate-limited.
+Batch commits locally and wait for user confirmation before pushing to avoid overwhelming the review system.

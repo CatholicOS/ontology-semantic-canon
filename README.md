@@ -3,13 +3,13 @@
 This repository contains a formal ontology designed to model the hierarchical and relational structure of the Catholic **Deposit of Faith**.
 It maps the interdependence of Sacred Scripture, Sacred Tradition, and the Magisterium, providing a semantic framework for how these sources are transmitted and interpreted.
 
-### 📖 Overview
+## 📖 Overview
 
 The **Catholic Semantic Canon** moves beyond a static bibliography.
 It provides a machine-readable logic for the "Living Tradition", capturing not just what the sources are,
 but how they relate to one another in terms of authority, chronology, and theological weight.
 
-### 🛠 Core Objectives
+## 🛠 Core Objectives
 
 - **Hierarchical Mapping**: Defining the relationship between primary revelation and secondary authoritative commentary.
 - **Interdependence**: Modeling how the Church’s Magisterium interprets Scripture and how Tradition sustains both.
@@ -18,21 +18,22 @@ but how they relate to one another in terms of authority, chronology, and theolo
 
 ### 🗂 Key Components
 
-| Component | Description |
-| :--- | :--- |
-| **Sacred Scripture** | The written Word of God, categorized by canon, genre, and testament. |
-| **Sacred Tradition** | The oral and lived transmission of faith, including Patristics and Liturgy. |
-| **The Magisterium** | The teaching authority (Papal Encyclicals, Conciliar Documents) and their levels of certainty. |
-| **Relational Logic** | Predicates that define "Interpretation," "Clarification," and "Succession." |
+| Component            | Description                                                                                    |
+| :------------------- | :--------------------------------------------------------------------------------------------- |
+| **Sacred Scripture** | The written Word of God, categorized by canon, genre, and testament.                           |
+| **Sacred Tradition** | The oral and lived transmission of faith, including Patristics and Liturgy.                    |
+| **The Magisterium**  | The teaching authority (Papal Encyclicals, Conciliar Documents) and their levels of certainty. |
+| **Relational Logic** | Predicates that define "Interpretation," "Clarification," and "Succession."                    |
 
-### 🚀 Getting Started
+## 🚀 Getting Started
 
-The primary "source of truth" for this ontology is hosted on **WebProtégé**. To ensure data integrity and collaborative consistency, all structural edits and maintenance are managed through that platform.
+The primary "source of truth" for this ontology is hosted on **WebProtégé**.
+To ensure data integrity and collaborative consistency, all structural edits and maintenance are managed through that platform.
 
-* **Access the Model:** [Catholic OS Ontology on WebProtégé](https://webprotege.stanford.edu/#projects/75e2824f-d4e7-4a73-83be-1574345b9f28)
-* **Contributions:** Contributors should request access via the WebProtégé link above. All edits to classes and relationships should be made directly in the instance.
-* **Issue Tracking:** Please use the **GitHub Issues** tab to propose major structural changes or discuss ontological definitions.
-* **Versioning:** Versioning and exports are handled by the maintainers via WebProtégé. Direct Pull Requests to the ontology files in this repo will generally not be accepted.
+- **Access the Model:** [Catholic OS Ontology on WebProtégé](https://webprotege.stanford.edu/#projects/75e2824f-d4e7-4a73-83be-1574345b9f28)
+- **Contributions:** Contributors should request access via the WebProtégé link above. All edits to classes and relationships should be made directly in the instance.
+- **Issue Tracking:** Please use the **GitHub Issues** tab to propose major structural changes or discuss ontological definitions.
+- **Versioning:** Versioning and exports are handled by the maintainers via WebProtégé. Direct Pull Requests to the ontology files in this repo will generally not be accepted.
 
 ### 🔍 Running SPARQL Queries
 
@@ -76,7 +77,8 @@ java -jar target/semantic-canon-query-runner-1.0.0.jar
 
 #### Using Apache Jena (Command Line)
 
-If you have [Apache Jena](https://jena.apache.org/) installed globally, use the `arq` command. See the [Java example documentation](examples/java/README.md#installing-apache-jena-globally) for installation instructions.
+If you have [Apache Jena](https://jena.apache.org/) installed globally, use the `arq` command.
+See the [Java example documentation](examples/java/README.md#installing-apache-jena-globally) for installation instructions.
 
 ```bash
 # Run a query against the OWL file
@@ -103,7 +105,8 @@ for row in g.query(query):
     print(row)
 ```
 
-> **Note:** The ontology contains 120,000+ triples. See the [Python example documentation](examples/python/README.md) for caching strategies and known compatibility issues with Python 3.12.
+> **Note:** The ontology contains 120,000+ triples.
+> See the [Python example documentation](examples/python/README.md) for caching strategies and known compatibility issues with Python 3.12.
 
 #### Using a Triple Store
 
@@ -121,20 +124,20 @@ For larger-scale querying, load the ontology into a triple store:
 
 #### Available Queries
 
-| Query | Description |
-| :--- | :--- |
-| `01-list-all-classes.rq` | List all classes with labels and definitions |
-| `02-list-object-properties.rq` | List object properties with domains/ranges |
-| `03-find-church-hierarchy-roles.rq` | Find Pope, Cardinal, Bishop, Priest roles |
-| `04-find-sacrament-concepts.rq` | Find sacrament-related concepts |
-| `05-class-hierarchy.rq` | Display subclass relationships |
-| `06-find-religious-orders.rq` | Find religious orders and institutes |
-| `07-find-juridical-structures.rq` | Find Diocese, Parish, Holy See, etc. |
-| `08-authority-properties.rq` | Find authority/jurisdiction concepts |
-| `09-provenance-relationships.rq` | Track document origins and versions |
-| `10-legal-actions.rq` | Find FOLIO legal action properties |
-| `11-search-by-keyword.rq` | Template for full-text keyword search |
-| `12-ontology-statistics.rq` | Get counts of classes/properties |
-| `13-find-liturgical-concepts.rq` | Find Mass, Liturgy, Rite concepts |
-| `14-find-canon-law-documents.rq` | Find Canon, Decree, Encyclical types |
-| `15-construct-label-graph.rq` | CONSTRUCT query for vocabulary extraction |
+| Query                               | Description                                  |
+| :---------------------------------- | :------------------------------------------- |
+| `01-list-all-classes.rq`            | List all classes with labels and definitions |
+| `02-list-object-properties.rq`      | List object properties with domains/ranges   |
+| `03-find-church-hierarchy-roles.rq` | Find Pope, Cardinal, Bishop, Priest roles    |
+| `04-find-sacrament-concepts.rq`     | Find sacrament-related concepts              |
+| `05-class-hierarchy.rq`             | Display subclass relationships               |
+| `06-find-religious-orders.rq`       | Find religious orders and institutes         |
+| `07-find-juridical-structures.rq`   | Find Diocese, Parish, Holy See, etc.         |
+| `08-authority-properties.rq`        | Find authority/jurisdiction concepts         |
+| `09-provenance-relationships.rq`    | Track document origins and versions          |
+| `10-legal-actions.rq`               | Find FOLIO legal action properties           |
+| `11-search-by-keyword.rq`           | Template for full-text keyword search        |
+| `12-ontology-statistics.rq`         | Get counts of classes/properties             |
+| `13-find-liturgical-concepts.rq`    | Find Mass, Liturgy, Rite concepts            |
+| `14-find-canon-law-documents.rq`    | Find Canon, Decree, Encyclical types         |
+| `15-construct-label-graph.rq`       | CONSTRUCT query for vocabulary extraction    |

@@ -17,12 +17,12 @@ FILTER(REGEX(STR(?label), "Religious|Order|Monk|Friar|Sister|Brother", "i"))
 
 **Problems with this approach:**
 
-| Issue | Example |
-|-------|---------|
-| Semantic blindness | "Brother" matches sibling AND monastic — regex can't disambiguate |
+| Issue              | Example                                                              |
+| ------------------ | -------------------------------------------------------------------- |
+| Semantic blindness | "Brother" matches sibling AND monastic — regex can't disambiguate    |
 | Maintenance burden | Add `Oblate` to ontology → must manually update every relevant query |
-| Brittleness | Typo in regex breaks silently; ontology validates |
-| No inheritance | Regex doesn't know `Franciscan` is a subclass of `ReligiousOrder` |
+| Brittleness        | Typo in regex breaks silently; ontology validates                    |
+| No inheritance     | Regex doesn't know `Franciscan` is a subclass of `ReligiousOrder`    |
 
 ---
 
@@ -31,6 +31,7 @@ FILTER(REGEX(STR(?label), "Religious|Order|Monk|Friar|Sister|Brother", "i"))
 **Implementation**: Replace regex pattern matching with `rdfs:subClassOf*` property paths that leverage the ontology's semantic structure.
 
 **Before** (fragile regex):
+
 ```sparql
 SELECT ?entity ?label WHERE {
   ?entity rdfs:label ?label .
@@ -39,6 +40,7 @@ SELECT ?entity ?label WHERE {
 ```
 
 **After** (semantic query):
+
 ```sparql
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -59,11 +61,13 @@ ORDER BY ?parentClass ?label
 ```
 
 **Benefits**:
+
 - Uses the ontology's inheritance hierarchy — add `Oblate` under `ConsecratedLife`, queries automatically include it
 - Disambiguates — `Brother` as monastic has a different class URI than `Brother` as sibling
 - Self-maintains — the ontology IS the query vocabulary
 
 **Queries to Refactor**:
+
 - [ ] `03-find-church-hierarchy-roles.rq` → Use `osc:ClericalRole` hierarchy
 - [ ] `04-find-sacrament-concepts.rq` → Use `osc:Sacrament` hierarchy
 - [ ] `06-find-religious-orders.rq` → Use `osc:ConsecratedLife` hierarchy
@@ -93,6 +97,7 @@ osc:Franciscan a owl:Class ;
 ```
 
 **Query pattern**:
+
 ```sparql
 SELECT ?entity ?label WHERE {
   ?entity osc:queryCategory "religious_life" ;
@@ -101,6 +106,7 @@ SELECT ?entity ?label WHERE {
 ```
 
 **WebProtege Tasks**:
+
 - [ ] Create `osc:queryCategory` annotation property
 - [ ] Define standard category values (religious_life, sacraments, hierarchy, juridical, liturgical)
 - [ ] Apply categories to relevant classes
@@ -123,16 +129,18 @@ osc:MonasticBrother a owl:Class ;
 ```
 
 **Annotation Properties to Use**:
-| Property | Purpose |
-|----------|---------|
-| `rdfs:label` | Primary display name |
-| `skos:altLabel` | Synonyms, alternate names, Latin terms |
-| `skos:prefLabel` | Preferred label when multiple exist |
-| `skos:scopeNote` | Disambiguation context |
-| `skos:definition` | Formal definition |
-| `skos:example` | Usage examples |
+
+| Property          | Purpose                                |
+| ----------------- | -------------------------------------- |
+| `rdfs:label`      | Primary display name                   |
+| `skos:altLabel`   | Synonyms, alternate names, Latin terms |
+| `skos:prefLabel`  | Preferred label when multiple exist    |
+| `skos:scopeNote`  | Disambiguation context                 |
+| `skos:definition` | Formal definition                      |
+| `skos:example`    | Usage examples                         |
 
 **WebProtege Tasks**:
+
 - [ ] Audit classes with ambiguous labels (Brother, Order, Mass, etc.)
 - [ ] Add `skos:scopeNote` for disambiguation
 - [ ] Add `skos:altLabel` for synonyms and Latin equivalents
@@ -144,11 +152,13 @@ osc:MonasticBrother a owl:Class ;
 **Implementation**: When you need a fixed list of types, use `VALUES` instead of regex:
 
 **Before** (regex):
+
 ```sparql
 FILTER(REGEX(STR(?label), "Pope|Cardinal|Archbishop|Bishop", "i"))
 ```
 
 **After** (VALUES clause):
+
 ```sparql
 VALUES ?targetType {
   osc:Pope
@@ -161,6 +171,7 @@ VALUES ?targetType {
 ```
 
 **Benefits**:
+
 - Faster than regex (indexed lookups vs. string scanning)
 - Unambiguous (uses URIs, not string matching)
 - Generatable from ontology queries
@@ -172,7 +183,8 @@ VALUES ?targetType {
 **Use Case**: External systems that don't speak SPARQL may still need regex patterns. Generate them from the ontology.
 
 **Workflow**:
-```
+
+```text
 Ontology (OWL/TTL)
     ↓ [SPARQL CONSTRUCT query]
 Terms vocabulary (JSON/YAML)
@@ -183,6 +195,7 @@ External systems use generated patterns
 ```
 
 **Step 1**: Create vocabulary extraction query (`queries/extract-vocabulary.rq`):
+
 ```sparql
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -201,6 +214,7 @@ ORDER BY ?category ?label
 ```
 
 **Step 2**: Create pattern generator (`scripts/generate_patterns.py`):
+
 ```python
 from rdflib import Graph
 import json
@@ -250,7 +264,7 @@ if __name__ == "__main__":
 
 ### Recommended Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    WebProtégé (Source of Truth)             │
 │                                                             │
@@ -288,11 +302,13 @@ if __name__ == "__main__":
 **Problem**: The current ontology lacks explicit `hasPart` relations between books, chapters, and verses, making hierarchical navigation difficult.
 
 **Implementation**:
+
 - Add `hasPart` / `isPartOf` object properties with proper inverses
 - Define class hierarchy: `Bible → Testament → Book → Chapter → Verse`
 - Use SKOS or DCTerms vocabulary for part-whole relationships
 
 **Example Triples to Add**:
+
 ```turtle
 @prefix osc: <https://ontology.catholicos.catholic/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
@@ -311,6 +327,7 @@ osc:Verse rdfs:subClassOf osc:ScriptureUnit .
 ```
 
 **WebProtege Tasks**:
+
 - [ ] Create `ScriptureUnit` superclass
 - [ ] Create `Bible`, `Testament`, `Book`, `Chapter`, `Verse` classes
 - [ ] Add `hasPart` and `isPartOf` object properties
@@ -323,10 +340,12 @@ osc:Verse rdfs:subClassOf osc:ScriptureUnit .
 **Problem**: No properties exist for book/chapter/verse numbering, preventing queries like "find verse 3:16 of John."
 
 **Implementation**:
+
 - Add datatype properties: `hasBookNumber`, `hasChapterNumber`, `hasVerseNumber`
 - Define range as `xsd:integer` or `xsd:positiveInteger`
 
 **Example**:
+
 ```turtle
 osc:hasBookNumber a owl:DatatypeProperty ;
     rdfs:label "has book number"@en ;
@@ -352,14 +371,15 @@ osc:hasVerseNumber a owl:DatatypeProperty ;
 
 **Recommended Standards**:
 
-| Vocabulary | Use Case | URI |
-|------------|----------|-----|
-| **FRBR** | Work/Expression/Manifestation hierarchy | `http://purl.org/vocab/frbr/core#` |
-| **FaBiO** | Bibliographic ontology | `http://purl.org/spar/fabio/` |
-| **Dublin Core** | Basic metadata | `http://purl.org/dc/terms/` |
-| **BIBO** | Bibliography ontology | `http://purl.org/ontology/bibo/` |
+| Vocabulary      | Use Case                                | URI                                |
+| --------------- | --------------------------------------- | ---------------------------------- |
+| **FRBR**        | Work/Expression/Manifestation hierarchy | `http://purl.org/vocab/frbr/core#` |
+| **FaBiO**       | Bibliographic ontology                  | `http://purl.org/spar/fabio/`      |
+| **Dublin Core** | Basic metadata                          | `http://purl.org/dc/terms/`        |
+| **BIBO**        | Bibliography ontology                   | `http://purl.org/ontology/bibo/`   |
 
 **Implementation**:
+
 - Map existing classes to FRBR concepts (Bible as Work, translations as Expressions)
 - Use FaBiO for document types (Book, Chapter)
 - Leverage `dcterms:isPartOf` for containment
@@ -371,12 +391,14 @@ osc:hasVerseNumber a owl:DatatypeProperty ;
 **Problem**: Some object properties lack explicit domain/range declarations, reducing reasoning capabilities.
 
 **Tasks**:
+
 - [ ] Audit all object properties in WebProtege
 - [ ] Add missing `rdfs:domain` declarations
 - [ ] Add missing `rdfs:range` declarations
 - [ ] Document constraint rationale
 
 **Query to Find Missing Constraints**:
+
 ```sparql
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -394,17 +416,19 @@ SELECT ?property WHERE {
 **Problem**: Navigation in both directions (parent→child and child→parent) requires inverse properties.
 
 **Implementation**:
+
 - Add `owl:inverseOf` declarations for all hierarchical relationships
 - Ensure symmetrical property definitions
 
 **Key Inverse Pairs**:
-| Property | Inverse |
-|----------|---------|
-| `hasPart` | `isPartOf` |
-| `hasChapter` | `chapterOf` |
-| `hasVerse` | `verseOf` |
-| `contains` | `containedIn` |
-| `cites` | `citedBy` |
+
+| Property     | Inverse       |
+| ------------ | ------------- |
+| `hasPart`    | `isPartOf`    |
+| `hasChapter` | `chapterOf`   |
+| `hasVerse`   | `verseOf`     |
+| `contains`   | `containedIn` |
+| `cites`      | `citedBy`     |
 
 ---
 
@@ -415,11 +439,13 @@ SELECT ?property WHERE {
 **Problem**: Different Christian traditions use different biblical canons. The ontology should model this.
 
 **Implementation**:
+
 - Create `BibleCanon` class
 - Add individuals for major canons
 - Link books to their respective canons
 
 **Example**:
+
 ```turtle
 osc:BibleCanon a owl:Class ;
     rdfs:label "Bible Canon"@en ;
@@ -447,11 +473,13 @@ osc:EthiopianCanon a osc:BibleCanon ;
 ### 2.2 Model Canon Membership
 
 **Implementation**:
+
 - Add `includedInCanon` object property
 - Link book individuals to canon individuals
 - Model deuterocanonical/apocryphal distinctions
 
 **Example**:
+
 ```turtle
 osc:includedInCanon a owl:ObjectProperty ;
     rdfs:label "included in canon"@en ;
@@ -469,6 +497,7 @@ osc:BookOfTobit a osc:Book ;
 ### 2.3 Define Canon Status Classes
 
 **Implementation**:
+
 ```turtle
 osc:CanonStatus a owl:Class ;
     rdfs:label "Canon Status"@en .
@@ -495,6 +524,7 @@ osc:Apocryphal a osc:CanonStatus ;
 **Location**: `queries/templates/`
 
 **Templates to Create**:
+
 1. `template-find-by-hierarchy.rq` - Navigate part-whole relationships
 2. `template-find-by-reference.rq` - Look up Book:Chapter:Verse
 3. `template-canon-comparison.rq` - Compare books across canons
@@ -502,6 +532,7 @@ osc:Apocryphal a osc:CanonStatus ;
 5. `template-search-definitions.rq` - Full-text search with ranking
 
 **Example Template** (`template-find-by-reference.rq`):
+
 ```sparql
 # Template: Find Scripture by Reference
 # Parameters: $BOOK, $CHAPTER, $VERSE
@@ -526,6 +557,7 @@ SELECT ?verse ?text WHERE {
 **Problem**: Queries inconsistently define prefixes, leading to errors and maintenance burden.
 
 **Solution**: Create `queries/common-prefixes.rq` include file:
+
 ```sparql
 # Common Prefixes for Catholic Semantic Canon
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -541,6 +573,7 @@ PREFIX osc: <https://ontology.catholicos.catholic/>
 ```
 
 **Update Query Runners**:
+
 - Python: Auto-inject common prefixes
 - Java: Auto-inject common prefixes
 
@@ -549,11 +582,13 @@ PREFIX osc: <https://ontology.catholicos.catholic/>
 ### 3.3 Add Query Validation
 
 **Implementation**:
+
 - Add SPARQL syntax validation to query runners
 - Create test harness for all queries
 - Add expected result counts for regression testing
 
 **Python Enhancement** (`examples/python/query_validator.py`):
+
 ```python
 def validate_query(query_file):
     """Validate SPARQL syntax before execution."""
@@ -576,6 +611,7 @@ def validate_query(query_file):
 **Location**: `tests/`
 
 **Test Categories**:
+
 1. **Ontology Validation Tests**
    - OWL consistency checking
    - Domain/range constraint validation
@@ -592,7 +628,8 @@ def validate_query(query_file):
    - Cross-language result consistency
 
 **Example Test Structure**:
-```
+
+```text
 tests/
 ├── ontology/
 │   ├── test_consistency.py
@@ -612,6 +649,7 @@ tests/
 ### 4.2 Add CI/CD Pipeline
 
 **Implementation** (`.github/workflows/validate.yml`):
+
 ```yaml
 name: Validate Ontology
 
@@ -647,6 +685,7 @@ jobs:
 **Create**: `docs/design-decisions.md`
 
 **Content**:
+
 - Rationale for FOLIO base ontology choice
 - Namespace design decisions
 - Class hierarchy philosophy
@@ -660,6 +699,7 @@ jobs:
 **Create**: `docs/vocabulary.md`
 
 **Content**:
+
 - Complete class reference with definitions
 - Property reference with domains/ranges
 - Usage examples for each major class
@@ -672,6 +712,7 @@ jobs:
 **Create**: `docs/querying.md`
 
 **Content**:
+
 - Query patterns for common use cases
 - Performance optimization tips
 - Reasoning/inference examples
@@ -682,21 +723,25 @@ jobs:
 ## Phase 6: Future Enhancements (Long-term)
 
 ### 6.1 SPARQL Endpoint Deployment
+
 - Deploy Apache Jena Fuseki as public endpoint
 - Add authentication for write operations
 - Implement rate limiting
 
 ### 6.2 Linked Data Integration
+
 - Link to DBpedia/Wikidata entities
 - Add `owl:sameAs` relationships
 - Implement content negotiation
 
 ### 6.3 OWL Reasoning Examples
+
 - Add reasoning examples with Pellet/HermiT
 - Demonstrate inferred relationships
 - Create inference query patterns
 
 ### 6.4 Multi-language Support
+
 - Add labels in Latin, Greek, Hebrew
 - Support liturgical language queries
 - Add translation relationships
@@ -705,28 +750,28 @@ jobs:
 
 ## Implementation Priority Matrix
 
-| Phase | Priority | Effort | Impact | Dependencies |
-|-------|----------|--------|--------|--------------|
-| **0.1 Property Path Queries** | **Critical** | Medium | **Very High** | None |
-| **0.2 Query Category Annotations** | **Critical** | Low | High | None |
-| **0.3 SKOS Disambiguation** | **Critical** | Medium | High | None |
-| **0.4 VALUES Clause Patterns** | **Critical** | Low | Medium | 0.1 |
-| **0.5 Pattern Generation** | High | Medium | Medium | 0.2, 0.3 |
-| 1.1 Class Hierarchy | High | Medium | High | 0.x |
-| 1.2 Numeric Properties | High | Low | High | 1.1 |
-| 1.3 Standard Vocabularies | High | Medium | High | None |
-| 1.4 Domain/Range | High | Medium | Medium | 1.1 |
-| 1.5 Inverse Properties | High | Low | Medium | 1.1 |
-| 2.1 Canon Individuals | Medium | Low | High | 1.1 |
-| 2.2 Canon Membership | Medium | Medium | High | 2.1 |
-| 2.3 Canon Status | Medium | Low | Medium | 2.1 |
-| 3.1 Query Templates | Medium | Medium | Medium | 0.x, 1.x |
-| 3.2 Standard Prefixes | Medium | Low | Medium | None |
-| 3.3 Query Validation | Medium | Medium | Medium | None |
-| 4.1 Test Suite | Medium | High | High | 0.x, 1.x, 3.x |
-| 4.2 CI/CD Pipeline | Medium | Medium | High | 4.1 |
-| 5.x Documentation | Lower | Medium | Medium | 1.x, 2.x |
-| 6.x Future | Long-term | High | High | All |
+| Phase                              | Priority     | Effort | Impact        | Dependencies  |
+| ---------------------------------- | ------------ | ------ | ------------- | ------------- |
+| **0.1 Property Path Queries**      | **Critical** | Medium | **Very High** | None          |
+| **0.2 Query Category Annotations** | **Critical** | Low    | High          | None          |
+| **0.3 SKOS Disambiguation**        | **Critical** | Medium | High          | None          |
+| **0.4 VALUES Clause Patterns**     | **Critical** | Low    | Medium        | 0.1           |
+| **0.5 Pattern Generation**         | High         | Medium | Medium        | 0.2, 0.3      |
+| 1.1 Class Hierarchy                | High         | Medium | High          | 0.x           |
+| 1.2 Numeric Properties             | High         | Low    | High          | 1.1           |
+| 1.3 Standard Vocabularies          | High         | Medium | High          | None          |
+| 1.4 Domain/Range                   | High         | Medium | Medium        | 1.1           |
+| 1.5 Inverse Properties             | High         | Low    | Medium        | 1.1           |
+| 2.1 Canon Individuals              | Medium       | Low    | High          | 1.1           |
+| 2.2 Canon Membership               | Medium       | Medium | High          | 2.1           |
+| 2.3 Canon Status                   | Medium       | Low    | Medium        | 2.1           |
+| 3.1 Query Templates                | Medium       | Medium | Medium        | 0.x, 1.x      |
+| 3.2 Standard Prefixes              | Medium       | Low    | Medium        | None          |
+| 3.3 Query Validation               | Medium       | Medium | Medium        | None          |
+| 4.1 Test Suite                     | Medium       | High   | High          | 0.x, 1.x, 3.x |
+| 4.2 CI/CD Pipeline                 | Medium       | Medium | High          | 4.1           |
+| 5.x Documentation                  | Lower        | Medium | Medium        | 1.x, 2.x      |
+| 6.x Future                         | Long-term    | High   | High          | All           |
 
 ---
 
@@ -736,7 +781,7 @@ A colleague has developed concrete implementations for both solutions. These sho
 
 ### Directory Structure to Add
 
-```
+```text
 ontology-semantic-canon/
 ├── config/
 │   └── query-categories.yaml    # Category→class mappings
@@ -764,15 +809,15 @@ ontology-semantic-canon/
 
 ### Semantic Queries (Solution 1)
 
-| Query | Purpose |
-|-------|---------|
-| `01-religious-orders.rq` | Religious institutes via `rdfs:subClassOf*` |
-| `02-church-hierarchy.rq` | Clerical offices and ranks |
-| `03-sacraments.rq` | All seven sacraments |
-| `04-juridical-structures.rq` | Dioceses, parishes, curia |
-| `05-liturgical-concepts.rq` | Mass, rites, seasons |
-| `06-canon-law-documents.rq` | Encyclicals, canons, decrees |
-| `07-disambiguation.rq` | Resolves "Brother" (monastic vs. sibling) |
+| Query                        | Purpose                                     |
+| ---------------------------- | ------------------------------------------- |
+| `01-religious-orders.rq`     | Religious institutes via `rdfs:subClassOf*` |
+| `02-church-hierarchy.rq`     | Clerical offices and ranks                  |
+| `03-sacraments.rq`           | All seven sacraments                        |
+| `04-juridical-structures.rq` | Dioceses, parishes, curia                   |
+| `05-liturgical-concepts.rq`  | Mass, rites, seasons                        |
+| `06-canon-law-documents.rq`  | Encyclicals, canons, decrees                |
+| `07-disambiguation.rq`       | Resolves "Brother" (monastic vs. sibling)   |
 
 ### Pattern Generation Workflow (Solution 2)
 
@@ -822,4 +867,4 @@ All ontology changes should be made through WebProtege, then exported to the rep
 
 ---
 
-*Last updated: December 2024*
+_Last updated: December 2024_
