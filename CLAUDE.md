@@ -54,7 +54,7 @@ java -jar target/semantic-canon-query-runner-1.0.0.jar
 
 ## Repository Structure
 
-```
+```text
 sources/                    # Ontology files (OWL, TTL, OWX, OMN, OFN formats)
 queries/                    # Standard SPARQL query files (.rq) - use regex patterns
 queries/jena/               # Full-featured semantic queries for Apache Jena (arq)
