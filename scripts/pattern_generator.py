@@ -62,7 +62,7 @@ def load_ontology(ontology_path: Path) -> Graph:
                 g = pickle.load(f)
             print(f"Loaded {len(g)} triples from cache.")
             return g
-        except Exception as e:
+        except (pickle.UnpicklingError, EOFError, AttributeError, ModuleNotFoundError, OSError) as e:
             print(f"Cache load failed ({e}), parsing ontology...")
 
     g = Graph()
@@ -161,7 +161,7 @@ def get_subclass_labels(graph: Graph, root_uri: URIRef) -> set:
                 label_str = label_str.strip()
                 if label_str and len(label_str) > 1:
                     labels.add(label_str)
-    except Exception as e:
+    except (TypeError, ValueError, AttributeError, KeyError) as e:
         print(f"  Warning: Query failed for {root_uri}: {e}")
 
     return labels
@@ -187,7 +187,7 @@ def get_subclass_uris(graph: Graph, root_uri: URIRef) -> list:
         for row in graph.query(query):
             if row["class"]:
                 uris.append(str(row["class"]))
-    except Exception as e:
+    except (TypeError, ValueError, AttributeError, KeyError) as e:
         print(f"  Warning: Query failed for {root_uri}: {e}")
 
     return uris
