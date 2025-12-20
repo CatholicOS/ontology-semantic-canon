@@ -245,7 +245,7 @@ def main():
     parser.add_argument(
         "--semantic", "-s",
         action="store_true",
-        help="Use semantic queries (rdfs:subClassOf* property paths) instead of regex-based queries"
+        help="Use semantic queries (UNION patterns to emulate subClassOf*, avoids rdflib segfaults)"
     )
 
     args = parser.parse_args()
