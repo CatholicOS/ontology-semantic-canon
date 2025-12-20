@@ -1,6 +1,9 @@
 # Build artifacts
 examples/java/target/
 
+# Node.js
+node_modules/
+
 # Python
 __pycache__/
 *.pyc
