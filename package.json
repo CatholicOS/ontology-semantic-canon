@@ -1,0 +1,20 @@
+{
+  "name": "ontology-semantic-canon",
+  "version": "1.0.0",
+  "description": "Catholic Semantic Canon - OWL ontology for the Catholic Deposit of Faith",
+  "private": true,
+  "scripts": {
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
+    "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\"",
+    "format:md": "prettier --write \"**/*.md\" \"!node_modules\""
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "^0.14.0",
+    "prettier": "^3.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CatholicOS/ontology-semantic-canon.git"
+  },
+  "license": "MIT"
+}
