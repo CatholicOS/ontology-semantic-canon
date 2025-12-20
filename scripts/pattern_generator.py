@@ -282,7 +282,9 @@ def generate_regex_pattern(labels: set) -> str:
 
     # Escape special regex characters and join with |
     escaped = [re.escape(label) for label in sorted(labels)]
-    return "|".join(escaped)
+    # Add word boundaries for whole-word matching
+    pattern = "|".join(escaped)
+    return rf"\b(?:{pattern})\b"
 
 
 def generate_values_clause(uris: list) -> str:
