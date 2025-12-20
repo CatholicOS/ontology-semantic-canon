@@ -47,7 +47,8 @@ def _process_label(g, class_uri, label_predicate, label_to_classes, is_alt=False
         # Get parent classes for context
         parents = []
         for parent in g.objects(class_uri, RDFS.subClassOf):
-            if parent == OWL.Thing:
+            # Skip blank nodes (restrictions, unions, etc.) and owl:Thing
+            if isinstance(parent, BNode) or parent == OWL.Thing:
                 continue
             for parent_label in g.objects(parent, RDFS.label):
                 parents.append(str(parent_label))

@@ -141,3 +141,6 @@ For larger-scale querying, load the ontology into a triple store:
 | `13-find-liturgical-concepts.rq`    | Find Mass, Liturgy, Rite concepts            |
 | `14-find-canon-law-documents.rq`    | Find Canon, Decree, Encyclical types         |
 | `15-construct-label-graph.rq`       | CONSTRUCT query for vocabulary extraction    |
+
+> **Note:** Additional semantic queries optimized for different SPARQL engines are available in `queries/jena/` and `queries/rdflib/`.
+> See [Python documentation](examples/python/README.md) and [Java documentation](examples/java/README.md) for details.

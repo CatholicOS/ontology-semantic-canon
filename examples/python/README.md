@@ -96,6 +96,28 @@ python query_runner.py --ontology ../../sources/ontology-semantic-canon.ttl
 | `14-find-canon-law-documents.rq`    | Find Canon, Decree, Encyclical types         |
 | `15-construct-label-graph.rq`       | CONSTRUCT query for vocabulary extraction    |
 
+### Semantic Queries
+
+Additional semantic queries optimized for rdflib are available in `queries/rdflib/`. These use UNION patterns instead of property paths (`rdfs:subClassOf*`) for better compatibility with rdflib/Python 3.12.
+
+```bash
+# Run semantic queries
+python query_runner.py --semantic          # Interactive menu
+python query_runner.py --semantic 01       # Run semantic query 01
+python query_runner.py --semantic --list   # List semantic queries
+```
+
+| Query                   | Description                                        |
+| :---------------------- | :------------------------------------------------- |
+| `01-church-hierarchy.rq` | Clergy classes (Pope, Cardinal, Bishop, etc.)      |
+| `02-consecrated-life.rq` | Religious orders (Religious Brother/Sister, etc.)  |
+| `03-sacraments.rq`       | Sacrament classes (Initiation, Healing, etc.)      |
+| `04-liturgy.rq`          | Liturgy classes (Mass, Rite, Divine Office, etc.)  |
+| `05-canon-law.rq`        | Religious law systems including Canon Law          |
+| `06-religious-events.rq` | Comprehensive religious events hierarchy           |
+| `07-disambiguation.rq`   | Disambiguate terms with parent class context       |
+| `08-hierarchy-tree.rq`   | Class hierarchy tree (2 levels deep)               |
+
 ## Performance: Pickle Caching
 
 The ontology contains 120,000+ triples and takes several seconds to parse. To improve startup time, the query runner automatically caches the parsed graph:
