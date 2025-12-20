@@ -288,7 +288,13 @@ def generate_regex_pattern(labels: set) -> str:
 
 
 def generate_values_clause(uris: list) -> str:
-    """Generate a SPARQL VALUES clause from a list of URIs."""
+    """
+    Generate a SPARQL VALUES clause from a list of URIs.
+
+    Note: Large ontologies (hundreds/thousands of classes) may generate
+    VALUES clauses exceeding SPARQL endpoint query limits (often 2KB-10KB).
+    Currently acceptable for the Catholic Semantic Canon ontology size.
+    """
     if not uris:
         return "VALUES ?targetClass { }"
 
