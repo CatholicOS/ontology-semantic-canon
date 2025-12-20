@@ -12,6 +12,13 @@ PREFIX osc: <https://ontology.catholicos.catholic/>
 
 SELECT ?class ?label ?definition ?parentLabel
 WHERE {
+  # Level 0: the root class itself
+  {
+    BIND(osc:RChKPk9K152BirrIYgAREsY AS ?class)
+    ?class rdfs:label ?label .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
   # Level 1: direct children of Clergy
   {
     ?class rdfs:subClassOf osc:RChKPk9K152BirrIYgAREsY ;
