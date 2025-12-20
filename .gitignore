@@ -1,0 +1,33 @@
+# Build artifacts
+examples/java/target/
+
+# Node.js
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+
+# Cache files
+*.pickle
+
+# Generated/exported ontology formats
+*.nt
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db

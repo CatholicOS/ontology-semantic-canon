@@ -78,23 +78,45 @@ python query_runner.py --ontology ../../sources/ontology-semantic-canon.ttl
 
 ## Available Queries
 
-| Query | Description |
-| :--- | :--- |
-| `01-list-all-classes.rq` | List all classes with labels and definitions |
-| `02-list-object-properties.rq` | List object properties with domains/ranges |
-| `03-find-church-hierarchy-roles.rq` | Find Pope, Cardinal, Bishop, Priest roles |
-| `04-find-sacrament-concepts.rq` | Find sacrament-related concepts |
-| `05-class-hierarchy.rq` | Display subclass relationships |
-| `06-find-religious-orders.rq` | Find religious orders and institutes |
-| `07-find-juridical-structures.rq` | Find Diocese, Parish, Holy See, etc. |
-| `08-authority-properties.rq` | Find authority/jurisdiction concepts |
-| `09-provenance-relationships.rq` | Track document origins and versions |
-| `10-legal-actions.rq` | Find FOLIO legal action properties |
-| `11-search-by-keyword.rq` | Template for full-text keyword search |
-| `12-ontology-statistics.rq` | Get counts of classes/properties |
-| `13-find-liturgical-concepts.rq` | Find Mass, Liturgy, Rite concepts |
-| `14-find-canon-law-documents.rq` | Find Canon, Decree, Encyclical types |
-| `15-construct-label-graph.rq` | CONSTRUCT query for vocabulary extraction |
+| Query                               | Description                                  |
+| :---------------------------------- | :------------------------------------------- |
+| `01-list-all-classes.rq`            | List all classes with labels and definitions |
+| `02-list-object-properties.rq`      | List object properties with domains/ranges   |
+| `03-find-church-hierarchy-roles.rq` | Find Pope, Cardinal, Bishop, Priest roles    |
+| `04-find-sacrament-concepts.rq`     | Find sacrament-related concepts              |
+| `05-class-hierarchy.rq`             | Display subclass relationships               |
+| `06-find-religious-orders.rq`       | Find religious orders and institutes         |
+| `07-find-juridical-structures.rq`   | Find Diocese, Parish, Holy See, etc.         |
+| `08-authority-properties.rq`        | Find authority/jurisdiction concepts         |
+| `09-provenance-relationships.rq`    | Track document origins and versions          |
+| `10-legal-actions.rq`               | Find FOLIO legal action properties           |
+| `11-search-by-keyword.rq`           | Template for full-text keyword search        |
+| `12-ontology-statistics.rq`         | Get counts of classes/properties             |
+| `13-find-liturgical-concepts.rq`    | Find Mass, Liturgy, Rite concepts            |
+| `14-find-canon-law-documents.rq`    | Find Canon, Decree, Encyclical types         |
+| `15-construct-label-graph.rq`       | CONSTRUCT query for vocabulary extraction    |
+
+### Semantic Queries
+
+Additional semantic queries optimized for rdflib are available in `queries/rdflib/`. These use UNION patterns instead of property paths (`rdfs:subClassOf*`) for better compatibility with rdflib/Python 3.12.
+
+```bash
+# Run semantic queries
+python query_runner.py --semantic          # Interactive menu
+python query_runner.py --semantic 01       # Run semantic query 01
+python query_runner.py --semantic --list   # List semantic queries
+```
+
+| Query                   | Description                                        |
+| :---------------------- | :------------------------------------------------- |
+| `01-church-hierarchy.rq` | Clergy classes (Pope, Cardinal, Bishop, etc.)      |
+| `02-consecrated-life.rq` | Religious orders (Religious Brother/Sister, etc.)  |
+| `03-sacraments.rq`       | Sacrament classes (Initiation, Healing, etc.)      |
+| `04-liturgy.rq`          | Liturgy classes (Mass, Rite, Divine Office, etc.)  |
+| `05-canon-law.rq`        | Religious law systems including Canon Law          |
+| `06-religious-events.rq` | Comprehensive religious events hierarchy           |
+| `07-disambiguation.rq`   | Disambiguate terms with parent class context       |
+| `08-hierarchy-tree.rq`   | Class hierarchy tree (2 levels deep)               |
 
 ## Performance: Pickle Caching
 
@@ -109,9 +131,11 @@ The cache is stored alongside the ontology file in `sources/`. If you update the
 
 ### Python 3.12 + rdflib Compatibility
 
-There are known stability issues with rdflib 7.x on Python 3.12 that can cause intermittent crashes when parsing large RDF files. The pickle caching mechanism helps mitigate this by reducing the number of parse operations.
+There are known stability issues with rdflib 7.x on Python 3.12 that can cause intermittent crashes when parsing large RDF files.
+The pickle caching mechanism helps mitigate this by reducing the number of parse operations.
 
 If you encounter crashes:
+
 - Re-run the command (usually succeeds on retry)
 - Ensure `lxml` is installed (`pip install lxml`)
 - Consider using Python 3.11 for maximum stability
@@ -119,6 +143,7 @@ If you encounter crashes:
 ### Complex SPARQL Queries
 
 Some complex SPARQL patterns (multiple OPTIONAL clauses with OR in FILTER) may cause issues. If a query crashes, try simplifying it by:
+
 - Reducing the number of OPTIONAL clauses
 - Using UNION instead of OR in FILTER
 - Removing ORDER BY clauses

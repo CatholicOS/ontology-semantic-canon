@@ -1,0 +1,49 @@
+# Semantic Query: Religious Events (Comprehensive)
+# Shows all religious event classes including Sacraments and Liturgy.
+#
+# Root class: Religious Events (RBypJHdXoQQwqYlG95KCDCQ)
+# Includes: Sacraments, Liturgy, and all their subclasses
+#
+# Note: Simplified to avoid rdflib/Python 3.12 segfaults.
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT ?class ?label ?definition ?parentLabel
+WHERE {
+  # Level 0: the root class itself
+  {
+    BIND(osc:RBypJHdXoQQwqYlG95KCDCQ AS ?class)
+    ?class rdfs:label ?label .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 1: direct children of Religious Events
+  {
+    ?class rdfs:subClassOf osc:RBypJHdXoQQwqYlG95KCDCQ ;
+           rdfs:label ?label .
+    osc:RBypJHdXoQQwqYlG95KCDCQ rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 2: grandchildren
+  {
+    ?parent rdfs:subClassOf osc:RBypJHdXoQQwqYlG95KCDCQ .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 3: great-grandchildren
+  {
+    ?grandparent rdfs:subClassOf osc:RBypJHdXoQQwqYlG95KCDCQ .
+    ?parent rdfs:subClassOf ?grandparent .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+}
+LIMIT 100

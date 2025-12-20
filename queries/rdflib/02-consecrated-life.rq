@@ -1,0 +1,49 @@
+# Semantic Query: Consecrated Life / Religious Orders
+# Shows all consecrated life classes in the ontology hierarchy.
+#
+# Root class: Consecrated Persons (RDUOYPsMTjLKT8XTp6oHH2o)
+# Includes: Male Religious, Female Religious, Religious Brother, Religious Sister, etc.
+#
+# Note: Simplified to avoid rdflib/Python 3.12 segfaults.
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT ?class ?label ?definition ?parentLabel
+WHERE {
+  # Level 0: the root class itself
+  {
+    BIND(osc:RDUOYPsMTjLKT8XTp6oHH2o AS ?class)
+    ?class rdfs:label ?label .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 1: direct children of Consecrated Persons
+  {
+    ?class rdfs:subClassOf osc:RDUOYPsMTjLKT8XTp6oHH2o ;
+           rdfs:label ?label .
+    osc:RDUOYPsMTjLKT8XTp6oHH2o rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 2: grandchildren
+  {
+    ?parent rdfs:subClassOf osc:RDUOYPsMTjLKT8XTp6oHH2o .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+  UNION
+  # Level 3: great-grandchildren
+  {
+    ?grandparent rdfs:subClassOf osc:RDUOYPsMTjLKT8XTp6oHH2o .
+    ?parent rdfs:subClassOf ?grandparent .
+    ?class rdfs:subClassOf ?parent ;
+           rdfs:label ?label .
+    ?parent rdfs:label ?parentLabel .
+    OPTIONAL { ?class skos:definition ?definition }
+  }
+}
+LIMIT 100

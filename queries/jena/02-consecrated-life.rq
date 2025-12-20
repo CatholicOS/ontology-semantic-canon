@@ -1,0 +1,39 @@
+# Semantic Query: Consecrated Life / Religious Orders
+# Uses rdfs:subClassOf* property path to find all subclasses of Consecrated Persons
+#
+# This query automatically includes any new religious institutes or
+# consecrated life forms added in WebProtege.
+#
+# Root class: Consecrated Persons (RDUOYPsMTjLKT8XTp6oHH2o)
+# Includes: Male Religious, Female Religious, Religious Brother, Religious Sister, etc.
+#
+# Requires: Apache Jena (arq) - uses full SPARQL 1.1 features
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX osc: <https://ontology.catholicos.catholic/>
+
+SELECT DISTINCT ?class ?label ?altLabel ?definition ?parentClass ?parentLabel
+WHERE {
+  # Find all classes that are subclasses of Consecrated Persons
+  ?class rdfs:subClassOf* osc:RDUOYPsMTjLKT8XTp6oHH2o .
+  ?class a owl:Class .
+  ?class rdfs:label ?label .
+
+  # Optional: Get alternate labels (synonyms, Latin terms)
+  OPTIONAL { ?class skos:altLabel ?altLabel }
+
+  # Optional: Get the definition
+  OPTIONAL { ?class skos:definition ?definition }
+
+  # Optional: Show immediate parent class for hierarchy context
+  OPTIONAL {
+    ?class rdfs:subClassOf ?parentClass .
+    ?parentClass a owl:Class .
+    ?parentClass rdfs:label ?parentLabel .
+    FILTER(?parentClass != owl:Thing)
+  }
+}
+ORDER BY ?parentLabel ?label

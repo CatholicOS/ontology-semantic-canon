@@ -9,6 +9,9 @@ Usage:
     python query_runner.py 01                  # Run query 01-list-all-classes.rq
     python query_runner.py --list              # List available queries
     python query_runner.py --query "SELECT ..."  # Run inline SPARQL
+    python query_runner.py --semantic          # Use semantic queries (property paths)
+    python query_runner.py --semantic 01       # Run semantic query 01
+    python query_runner.py --semantic --list   # List semantic queries
 """
 
 import argparse
@@ -29,6 +32,7 @@ SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
 SOURCES_DIR = PROJECT_ROOT / "sources"
 QUERIES_DIR = PROJECT_ROOT / "queries"
+RDFLIB_QUERIES_DIR = QUERIES_DIR / "rdflib"
 
 # Default ontology file (OWL/XML format with pickle caching for stability)
 DEFAULT_ONTOLOGY = SOURCES_DIR / "ontology-semantic-canon.owl"
@@ -79,13 +83,20 @@ def load_ontology(ontology_path: Path = DEFAULT_ONTOLOGY) -> Graph:
     return g
 
 
-def list_queries() -> list[Path]:
-    """List all available query files."""
-    if not QUERIES_DIR.exists():
-        print(f"Error: Queries directory not found: {QUERIES_DIR}")
+def list_queries(semantic: bool = False) -> list[Path]:
+    """List all available query files.
+
+    Args:
+        semantic: If True, list queries from the rdflib/ subdirectory
+                  which use semantic patterns optimized for rdflib/Python.
+    """
+    query_dir = RDFLIB_QUERIES_DIR if semantic else QUERIES_DIR
+
+    if not query_dir.exists():
+        print(f"Error: Queries directory not found: {query_dir}")
         return []
 
-    queries = sorted(QUERIES_DIR.glob("*.rq"))
+    queries = sorted(query_dir.glob("*.rq"))
     return queries
 
 
@@ -143,17 +154,26 @@ def run_query_file(graph: Graph, query_path: Path) -> None:
     run_query(graph, query_text)
 
 
-def interactive_menu(graph: Graph) -> None:
-    """Show an interactive menu to select and run queries."""
-    queries = list_queries()
+def interactive_menu(graph: Graph, semantic: bool = False) -> None:
+    """Show an interactive menu to select and run queries.
+
+    Args:
+        semantic: If True, show semantic queries from queries/rdflib/
+                  instead of regex-based queries from queries/.
+    """
+    queries = list_queries(semantic=semantic)
 
     if not queries:
         return
 
+    query_type = "Semantic" if semantic else "Standard"
+
     while True:
-        print("\n" + "=" * 50)
-        print("Available SPARQL Queries:")
-        print("=" * 50)
+        print("\n" + "=" * 60)
+        print(f"Available {query_type} SPARQL Queries:")
+        if semantic:
+            print("(Optimized for rdflib - use queries/jena/ with arq for full features)")
+        print("=" * 60)
 
         for i, q in enumerate(queries, 1):
             # Extract description from filename
@@ -162,7 +182,8 @@ def interactive_menu(graph: Graph) -> None:
 
         print("\n  q. Quit")
         print("  c. Custom SPARQL query")
-        print("=" * 50)
+        print(f"  s. Switch to {'standard' if semantic else 'semantic'} queries")
+        print("=" * 60)
 
         choice = input("\nSelect a query number (or 'q' to quit): ").strip().lower()
 
@@ -179,6 +200,12 @@ def interactive_menu(graph: Graph) -> None:
                 lines.append(line)
             if lines:
                 run_query(graph, "\n".join(lines))
+        elif choice == 's':
+            # Switch query type and refresh the menu
+            semantic = not semantic
+            queries = list_queries(semantic=semantic)
+            query_type = "Semantic" if semantic else "Standard"
+            print(f"\nSwitched to {query_type.lower()} queries.")
         else:
             try:
                 idx = int(choice) - 1
@@ -215,15 +242,23 @@ def main():
         default=DEFAULT_ONTOLOGY,
         help=f"Path to ontology file (default: {DEFAULT_ONTOLOGY.name})"
     )
+    parser.add_argument(
+        "--semantic", "-s",
+        action="store_true",
+        help="Use semantic queries (UNION patterns to emulate subClassOf*, avoids rdflib segfaults)"
+    )
 
     args = parser.parse_args()
 
     # List queries mode
     if args.list:
-        queries = list_queries()
-        print("\nAvailable queries:")
+        queries = list_queries(semantic=args.semantic)
+        query_type = "semantic" if args.semantic else "standard"
+        print(f"\nAvailable {query_type} queries:")
         for q in queries:
             print(f"  {q.name}")
+        if not args.semantic:
+            print("\n  (Use --semantic to list semantic queries)")
         return
 
     # Load ontology
@@ -242,17 +277,18 @@ def main():
 
     # Run specific query by number
     if args.query_number:
-        queries = list_queries()
+        queries = list_queries(semantic=args.semantic)
         matching = [q for q in queries if q.name.startswith(args.query_number)]
         if matching:
             run_query_file(graph, matching[0])
         else:
-            print(f"No query found matching '{args.query_number}'")
+            query_type = "semantic" if args.semantic else "standard"
+            print(f"No {query_type} query found matching '{args.query_number}'")
             print("Use --list to see available queries")
         return
 
     # Interactive mode
-    interactive_menu(graph)
+    interactive_menu(graph, semantic=args.semantic)
 
 
 if __name__ == "__main__":
