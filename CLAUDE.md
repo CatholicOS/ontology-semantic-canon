@@ -89,3 +89,7 @@ Use `queries/jena/` with `arq` for full hierarchy traversal and complex queries.
 ## Ontology Namespace
 
 The primary namespace is `https://ontology.catholicos.catholic/` (prefix: `osc:`).
+
+## Git Workflow
+
+**Do not push until explicitly told.** This repository uses CodeRabbit for automated code review, which is rate-limited. Batch commits locally and wait for user confirmation before pushing to avoid overwhelming the review system.
