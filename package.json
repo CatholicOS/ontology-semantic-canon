@@ -9,8 +9,8 @@
     "format:md": "prettier --write \"**/*.md\" \"!node_modules\""
   },
   "devDependencies": {
-    "markdownlint-cli2": "^0.14.0",
-    "prettier": "^3.3.0"
+    "markdownlint-cli2": "^0.19.1",
+    "prettier": "^3.7.4"
   },
   "repository": {
     "type": "git",
