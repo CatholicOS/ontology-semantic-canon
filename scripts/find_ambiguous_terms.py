@@ -66,7 +66,11 @@ def find_ambiguous_labels(g):
     """
     Find labels that appear on multiple classes.
 
-    Returns a dict mapping label -> list of (class_uri, parent_labels)
+    Returns a dict mapping label -> list of dicts with keys:
+        'uri': class URI string
+        'label': original label string
+        'parents': list of parent label strings
+        'is_alt': True if from skos:altLabel (optional)
     """
     # Collect all labels for each class
     label_to_classes = defaultdict(list)
