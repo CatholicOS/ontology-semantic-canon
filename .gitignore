@@ -13,6 +13,9 @@ venv/
 # Cache files
 *.pickle
 
+# Generated/exported ontology formats
+*.nt
+
 # IDE
 .idea/
 .vscode/
