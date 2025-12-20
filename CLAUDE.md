@@ -90,6 +90,15 @@ Use `queries/jena/` with `arq` for full hierarchy traversal and complex queries.
 
 The primary namespace is `https://ontology.catholicos.catholic/` (prefix: `osc:`).
 
+## Markdown Linting
+
+```bash
+bun install                # Install dependencies
+bun run lint:md            # Check markdown files
+bun run lint:md:fix        # Auto-fix markdown issues
+bun run format:md          # Format markdown with prettier
+```
+
 ## Git Workflow
 
 **Do not push until explicitly told.** This repository uses CodeRabbit for automated code review, which is rate-limited. Batch commits locally and wait for user confirmation before pushing to avoid overwhelming the review system.
