@@ -75,9 +75,20 @@ def load_ontology(ontology_path: Path) -> Graph:
         ".n3": "n3",
         ".nt": "nt",
     }
-    rdf_format = format_map.get(suffix, "xml")
+    rdf_format = format_map.get(suffix, "turtle")
     g.parse(str(ontology_path), format=rdf_format)
     print(f"Loaded {len(g)} triples.")
+
+    # Save to cache for faster subsequent loads
+    try:
+        import pickle
+        print(f"Saving to cache {cache_path.name}...")
+        with open(cache_path, "wb") as f:
+            pickle.dump(g, f)
+        print("Cache saved successfully.")
+    except Exception as e:
+        print(f"Warning: Could not save cache: {e}")
+
     return g
 
 
