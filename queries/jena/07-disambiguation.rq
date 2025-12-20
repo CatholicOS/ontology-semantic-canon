@@ -6,6 +6,10 @@
 #
 # Use this query to understand the semantic context of ambiguous terms.
 #
+# MAINTENANCE: The ambiguous terms list is defined in config/ambiguous-terms.yaml.
+# Update the FILTER clause below when that file changes. To find new ambiguous
+# terms, run: python scripts/find_ambiguous_terms.py
+#
 # Requires: Apache Jena (arq) - uses full SPARQL 1.1 features
 
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -19,8 +23,9 @@ WHERE {
   ?class a owl:Class .
   ?class rdfs:label ?label .
 
-  # Filter for potentially ambiguous terms
-  FILTER(REGEX(STR(?label), "^(Brother|Sister|Order|Mass|Canon|Office|Ministry|Father)$", "i"))
+  # Filter for potentially ambiguous terms (case-insensitive)
+  # Terms list defined in: config/ambiguous-terms.yaml
+  FILTER(LCASE(STR(?label)) IN ("brother", "sister", "order", "mass", "canon", "office", "ministry", "father"))
 
   # Restrict to Catholic ontology namespace
   FILTER(STRSTARTS(STR(?class), "https://ontology.catholicos.catholic/"))

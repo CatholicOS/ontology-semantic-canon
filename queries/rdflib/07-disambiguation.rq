@@ -5,8 +5,8 @@
 # by showing the parent class for context.
 #
 # MAINTENANCE NOTE: The VALUES clause below must be manually updated when new
-# ambiguous terms are added to the ontology. Run the following script to scan
-# the ontology for potentially ambiguous labels:
+# ambiguous terms are added to the ontology. The canonical list of ambiguous
+# terms is in config/ambiguous-terms.yaml. To find new ambiguous terms, run:
 #
 #   python scripts/find_ambiguous_terms.py
 #

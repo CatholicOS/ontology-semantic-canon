@@ -1,0 +1,26 @@
+# Ambiguous Terms Configuration
+#
+# Terms that may have multiple meanings in the Catholic ontology context.
+# These terms require disambiguation to understand their semantic meaning.
+#
+# Examples:
+#   - "Brother" can mean a religious brother (monk) or a sibling relationship
+#   - "Canon" can mean a church law or a member of a cathedral chapter
+#   - "Mass" can mean the Eucharistic celebration or a gathering
+#
+# To find new ambiguous terms, run:
+#   python scripts/find_ambiguous_terms.py
+#
+# After updating this list, also update:
+#   - queries/jena/07-disambiguation.rq (FILTER clause)
+#   - queries/rdflib/07-disambiguation.rq (VALUES clause URIs)
+
+ambiguous_terms:
+  - brother
+  - sister
+  - order
+  - mass
+  - canon
+  - office
+  - ministry
+  - father
