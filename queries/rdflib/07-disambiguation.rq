@@ -19,7 +19,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX osc: <https://ontology.catholicos.catholic/>
 
-SELECT ?label ?definition ?parentLabel
+SELECT ?class ?label ?definition ?parentLabel
 WHERE {
   # Specific classes with potentially ambiguous terms
   VALUES ?class {

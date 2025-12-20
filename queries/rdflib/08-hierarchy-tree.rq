@@ -8,7 +8,7 @@
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX osc: <https://ontology.catholicos.catholic/>
 
-SELECT ?label ?parentLabel
+SELECT ?class ?label ?parentLabel
 WHERE {
   # Root classes: Clergy, Sacraments, Consecrated Persons
   VALUES ?rootClass {
